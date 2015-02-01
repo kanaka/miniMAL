@@ -1,0 +1,30 @@
+["def", ">=", ["fn", ["a", "b"], ["if", ["<", "a", "b"], false, true]]]
+["def", ">", ["fn", ["a", "b"], ["if", [">=", "a", "b"], ["if", ["=", "a", "b"], false, true], false]]]
+["def", "<=", ["fn", ["a", "b"], ["if", [">", "a", "b"], false, true]]]
+
+["def", "list", ["fn", ["&", "a"], "a"]]
+["def", "list?", ["fn", ["a"], [ [".-", "Array", "isArray"], "a"]]]
+["def", "count", ["fn", ["a"], [".-", "a", "length"]]]
+["def", "rest", ["fn", ["a"], [".", "a", "slice", 1]]]
+["def", "map", ["fn", ["a", "b"], [".", "b", "map", "a"]]]
+["def", "apply", ["fn", ["a", "b"], [".", "a", "apply", null, "b"]]]
+
+["def", "println", ["fn", ["&", "a"], [".", [".-", "console", "log"], "apply", null, "a"]]]
+["def", "read-string", ["fn", ["a"], [ [".-", "JSON", "parse"], [".", "a", "slice", 1, ["-", [".-", "a", "length"], 1]]]]]
+
+/*
+["def","x",["fn",["a"],["*","a","a"]]]
+["x",7]
+["let", ["a", 3, "b", 4], ["+", "a", "b"]]
+["if", [ "=", 5, 5 ], 8, 9 ]
+["if", [ "=", 5, 6 ], 9]
+
+["def", "sum-to", ["fn", ["n"], ["if", ["=", "n", 0], 0, ["+", "n", ["sum-to", ["-", "n", 1]]]]]]
+["sum-to", 10]
+["def", "sum2", ["fn", ["n", "acc"], ["if", ["=", "n", 0], "acc", ["sum2", ["-", "n", 1], ["+", "n", "acc"]]]]]
+["sum2", 10, 0]
+["sum2", 10000, 0]
+
+["eval", ["read-string", "'[\"+\", 2, 3]'"]]
+*/
+

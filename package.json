@@ -1,0 +1,9 @@
+{
+    "name": "mal.json",
+    "version": "0.0.1",
+    "description": "JS1K variant of mal",
+    "dependencies": {
+        "uglify-js": "2.4.16",
+        "jscrush": "0.0.0"
+    }
+}
