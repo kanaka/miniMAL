@@ -44,14 +44,16 @@ function EVAL(ast, env) {
         ast = ast[2]; // TCO
     } else if (ast[0] == "`") {
         return ast[1];
-    } else if (ast[0] == ".-") {
-        var o = EVAL(ast[1], env);
-        return o[ast[2]];
-    } else if (ast[0] == ".") {
-        var o = EVAL(ast[1], env);
-        return o[ast[2]].apply(o, env_or_eval_ast(ast.slice(3), env));
+    } else if (ast[0] == ".-") {  // get or set attribute
+        var el = env_or_eval_ast(ast.slice(1), env),
+            x = el[0][el[1]];
+        return el[2] ? x = el[2] : x;
+    } else if (ast[0] == ".") {   // call object method
+        var el = env_or_eval_ast(ast.slice(1), env),
+            x = el[0][el[1]];
+        return x.apply(el[0], el.slice(2));
     } else if (ast[0] == "do") {
-        env_or_eval_ast(ast.slice(1,ast.length-1), env);
+        var el = env_or_eval_ast(ast.slice(1,ast.length-1), env);
         ast = ast[ast.length-1]; // TCO
     } else if (ast[0] == "if") {
         ast = EVAL(ast[1], env) ? ast[2] : ast[3]; // TCO
@@ -81,13 +83,11 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["get"]   = function(a,b) { return a[b]; } // and nth, first
-E["eval"]  = function(a,b) { return EVAL(a, E); }
-//env["throw"] = function(a,b,C,D) { throw(a); }
+E["map"]   = function(a,b) { return b.map(a); }
+E["eval"]  = function(a)   { return EVAL(a, E); }
+//env["throw"] = function(a) { throw(a); }
 
-//
 // Node specific
-//
 function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
 require('repl').start({
     prompt: "user> ",
