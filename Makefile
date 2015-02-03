@@ -1,4 +1,4 @@
-STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco step6_file stepA_interop stepB_web
+STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco step6_file step7_quote stepA_interop stepB_web
 
 .SECONDARY:
 
@@ -16,15 +16,19 @@ index.html: stepB_web-crush.js
 	@echo "</script>" >> $@
 	@echo "</html>" >> $@
 
+UGLIFY_OPTS=-c hoist_funs=true,unsafe=true,keep_fargs=true,pure_getters=true,screw-ie8=true,unused=false -m -e
+
+%-uglify-pretty.js: %.js
+	node_modules/uglify-js/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
 
 %-uglify.js: %.js
-	node_modules/uglify-js/bin/uglifyjs $< -c hoist_funs=true,unsafe=true,keep_fargs=true,pure_getters=true,screw-ie8=true,unused=false -m -e > $@
+	node_modules/uglify-js/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
 
 %-crush.js: %-uglify.js
 	cat $< | node_modules/jscrush/bin/jscrush > $@
 	
 compress^%: %-crush.js
-	wc $*.js $*-uglify.js $*-crush.js
+	@wc $*.js $*-uglify.js $*-crush.js | grep -v "total"
 
 .PHONY: compress
 compress: $(foreach s,$(STEPS),compress^$(s))

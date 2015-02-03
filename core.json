@@ -10,7 +10,8 @@
 ["def", "apply", ["fn", ["a", "b"], [".", "a", "apply", null, "b"]]]
 
 ["def", "println", ["fn", ["&", "a"], [".", [".-", "console", "log"], "apply", null, "a"]]]
-["def", "read-string", ["fn", ["a"], [ [".-", "JSON", "parse"], [".", "a", "slice", 1, ["-", [".-", "a", "length"], 1]]]]]
+["def", "read-string", ["fn", ["a"], [".", "JSON", "parse", "a"]]]
+["def", "throw", ["fn", ["a"], [".", null, "a"]]]
 
 /*
 ["def","x",["fn",["a"],["*","a","a"]]]
@@ -25,6 +26,9 @@
 ["sum2", 10, 0]
 ["sum2", 10000, 0]
 
-["eval", ["read-string", "'[\"+\", 2, 3]'"]]
+//////
+
+["eval", ["read-string", ["`", "[\"+\", 2, 3]"]]]
+["println", ["`", "hello world"]]
 */
 

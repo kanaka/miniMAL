@@ -42,6 +42,8 @@ function EVAL(ast, env) {
             }
         }
         ast = ast[2]; // TCO
+    } else if (ast[0] == "`") {
+        return ast[1];
     } else if (ast[0] == "do") {
         env_or_eval_ast(ast.slice(1,ast.length-1), env);
         ast = ast[ast.length-1]; // TCO
@@ -74,6 +76,7 @@ E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
 E["get"]   = function(a,b) { return a[b]; } // and nth, first
+E["eval"]  = function(a,b) { return EVAL(a, E); }
 //env["throw"] = function(a,b,C,D) { throw(a); }
 
 //
