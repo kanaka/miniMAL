@@ -1,11 +1,9 @@
-// 3 arguments: new environment with bindings
-// 2 arguments: eval_ast
-function env_or_eval_ast(ast, env, exprs) {
+// 2 args: eval_ast, 3 args: env_bind
+function eval_ast_or_bind(ast, env, exprs) {
     if (exprs) {
-        // Env implementation
-        env = Object.create(env);
-        // Returns a new Env with symbols in ast bound to
+        // Return new Env with symbols in ast bound to
         // corresponding values in exprs
+        env = Object.create(env);
         for (var i=0; i<ast.length; i++) {
             if (ast[i] == "&") {
                 // variable length arguments
@@ -17,23 +15,24 @@ function env_or_eval_ast(ast, env, exprs) {
         }
         return env;
     }
-    return Array.isArray(ast)
+    // Evaluate the form/ast
+    return Array.isArray(ast)                        // list?
         ? ast.map(function(e){return EVAL(e, env);}) // list
-        : (typeof ast == "string")                  // symbol
-            ? ast in env
+        : (typeof ast == "string")                   // symbol?
+            ? ast in env                             // symbol in env?
                 ? env[ast]                           // lookup symbol
                 : null[ast]                          // undefined symbol
-            : ast;                                   // just return ast
+            : ast;                                   // ast unchanged
 }
 
 function EVAL(ast, env) {
     //console.log("EVAL:", ast);
-    if (!Array.isArray(ast)) return env_or_eval_ast(ast, env);
+    if (!Array.isArray(ast)) return eval_ast_or_bind(ast, env);
 
     // apply
-    if (ast[0] == "def") {
+    if (ast[0] == "def") {        // update current environment
         return env[ast[1]] = EVAL(ast[2], env);
-    } else if (ast[0] == "let") {
+    } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env);
         for (var i in ast[1]) {
             if (i%2) {
@@ -41,21 +40,20 @@ function EVAL(ast, env) {
             }
         }
         return EVAL(ast[2], env);
-    } else if (ast[0] == "do") {
-        return env_or_eval_ast(ast.slice(1), env)[ast.length-2];
-
-    } else if (ast[0] == "if") {
+    } else if (ast[0] == "do") {  // multiple forms (for side-effects)
+        return eval_ast_or_bind(ast.slice(1), env)[ast.length-2];
+    } else if (ast[0] == "if") {  // branching conditional
         if (EVAL(ast[1], env)) {
             return EVAL(ast[2]);
         } else {
             return EVAL(ast[3]);
         }
-    } else if (ast[0] == "fn") {
+    } else if (ast[0] == "fn") {  // define new function (lambda)
         return function() {
-            return EVAL(ast[2], env_or_eval_ast(ast[1], env, arguments));
-        };
-    } else {
-        var el = env_or_eval_ast(ast, env), f = el[0];
+            return EVAL(ast[2], eval_ast_or_bind(ast[1], env, arguments));
+        }
+    } else {                      // invoke list form
+        var el = eval_ast_or_bind(ast, env), f = el[0];
         return f.apply(f, el.slice(1))
     }
 }
@@ -67,12 +65,10 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["get"]   = function(a,b) { return a[b]; } // and nth, first
+E["map"]   = function(a,b) { return b.map(a); }
 //env["throw"] = function(a,b,C,D) { throw(a); }
 
-//
 // Node specific
-//
 function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
 require('repl').start({
     prompt: "user> ",

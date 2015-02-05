@@ -1,11 +1,12 @@
 function eval_ast(ast, env) {
-    return Array.isArray(ast)
+    // Evaluate the form/ast
+    return Array.isArray(ast)                        // list?
         ? ast.map(function(e){return EVAL(e, env);}) // list
-        : (typeof ast == "string")                  // symbol
-            ? ast in env
+        : (typeof ast == "string")                   // symbol?
+            ? ast in env                             // symbol in env?
                 ? env[ast]                           // lookup symbol
                 : null[ast]                          // undefined symbol
-            : ast;                                   // just return ast
+            : ast;                                   // ast unchanged
 }
 
 function EVAL(ast, env) {
@@ -23,9 +24,7 @@ E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
 
-//
 // Node specific
-//
 function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
 require('repl').start({
     prompt: "user> ",

@@ -3,10 +3,8 @@ function EVAL(ast, env) {
 }
 
 
-//
 // Node specific
-//
-function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
+function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),"")); }
 require('repl').start({
     prompt: "user> ",
     ignoreUndefined: true,
