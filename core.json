@@ -1,48 +1,41 @@
-["def", ">=", ["fn", ["a", "b"], ["if", ["<", "a", "b"], false, true]]]
-["def", ">", ["fn", ["a", "b"], ["if", [">=", "a", "b"], ["if", ["=", "a", "b"], false, true], false]]]
-["def", "<=", ["fn", ["a", "b"], ["if", [">", "a", "b"], false, true]]]
+["do",
 
-["def", "list", ["fn", ["&", "a"], "a"]]
-["def", "list?", ["fn", ["a"], [".", "Array", ["`", "isArray"], "a"]]]
-["def", "count", ["fn", ["a"], [".-", "a", "length"]]]
-["def", "rest", ["fn", ["a"], [".", "a", ["`", "slice"], 1]]]
+["def", "nil?", ["fn", ["a"], ["=", null, "a"]]],
+["def", "true?", ["fn", ["a"], ["=", true, "a"]]],
+["def", "false?", ["fn", ["a"], ["=", false, "a"]]],
+["def", "string?", ["fn", ["a"], ["if", ["=", "a", null], false, ["=", ["`", "String"], [".-", [".-", "a", ["`", "constructor"]], ["`", "name"]]]]]],
 
-["def", "get", ["fn", ["a", "b"], [".-", "a", "b"]]]
-["def", "set", ["fn", ["a", "b", "c"], [".-", "a", "b", "c"]]]
-["def", "keys", ["fn", ["a"], [".", "Object", ["`", "keys"], "a"]]]
+["def", "pr-str", ["fn", ["&", "a"], [".", "a", ["`", "join"], ["`", " "]]]],
+["def", "str", ["fn", ["&", "a"], [".", "a", ["`", "join"], ["`", ""]]]],
+["def", "println", ["fn", ["&", "a"], ["apply", [".-", "console", ["`", "log"]], "a"]]],
 
-["def", "map", ["fn", ["a", "b"], [".", "b", ["`", "map"], "a"]]]
-["def", "apply", ["fn", ["a", "b"], [".", "a", ["`", "apply"], "a", "b"]]]
+["def", ">=", ["fn", ["a", "b"], ["if", ["<", "a", "b"], false, true]]],
+["def", ">", ["fn", ["a", "b"], ["if", [">=", "a", "b"], ["if", ["=", "a", "b"], false, true], false]]],
+["def", "<=", ["fn", ["a", "b"], ["if", [">", "a", "b"], false, true]]],
 
-["def", "println", ["fn", ["&", "a"], ["apply", [".-", "console", ["`", "log"]], "a"]]]
-["def", "read-string", ["fn", ["a"], [".", "JSON", ["`", "parse"], "a"]]]
-["def", "throw", ["fn", ["a"], [".-", null, "a"]]]
+["def", "list", ["fn", ["&", "a"], "a"]],
+["def", "list?", ["fn", ["a"], [".", "Array", ["`", "isArray"], "a"]]],
 
-/*
-["def","x",["fn",["a"],["*","a","a"]]]
-["x",7]
-["let", ["a", 3, "b", 4], ["+", "a", "b"]]
-["if", [ "=", 5, 5 ], 8, 9 ]
-["if", [ "=", 5, 6 ], 9]
+["def", "get", ["fn", ["a", "b"], [".-", "a", "b"]]],
+["def", "set", ["fn", ["a", "b", "c"], [".-", "a", "b", "c"]]],
+["def", "contains?", ["fn", ["a", "b"], [".", "a", ["`", "hasOwnProperty"], "b"]]],
+["def", "keys", ["fn", ["a"], [".", "Object", ["`", "keys"], "a"]]],
+["def", "vals", ["fn", ["a"], ["map",["fn",["k"],["get","a","k"]],["keys", "a"]]]],
 
-["def", "sum-to", ["fn", ["n"], ["if", ["=", "n", 0], 0, ["+", "n", ["sum-to", ["-", "n", 1]]]]]]
-["sum-to", 10]
-["def", "sum2", ["fn", ["n", "acc"], ["if", ["=", "n", 0], "acc", ["sum2", ["-", "n", 1], ["+", "n", "acc"]]]]]
-["sum2", 10, 0]
-["sum2", 10000, 0]
+["def", "cons", ["fn", ["a", "b"], [".", ["`", []], ["`", "concat"], ["list", "a"], "b"]]],
+["def", "concat", ["fn", ["&", "a"], [".", [".-", ["list"], ["`", "concat"]], ["`", "apply"], ["list"], "a"]]],
+["def", "nth", "get"],
+["def", "first", ["fn", ["a"], ["nth", "a", 0]]],
+["def", "rest", ["fn", ["a"], [".", "a", ["`", "slice"], 1]]],
+["def", "empty?", ["fn", ["a"], ["if", ["list?", "a"], ["if", ["=", 0, [".-", "a", ["`", "length"]]], true, false], ["=", "a", null]]]],
+["def", "count", ["fn", ["a"], [".-", "a", "length"]]],
 
-["def", "a", {"abc": 123, "def": 456}]
-["get", "a", ["`", "abc"]]
-["set", "a", ["`", "ghi"], 789]
-"a"
-["keys", "a"]
+["def", "apply", ["fn", ["a", "b"], [".", "a", ["`", "apply"], "a", "b"]]],
+["def", "map", ["fn", ["a", "b"], [".", "b", ["`", "map"], "a"]]],
 
-["map", ["fn", ["a"], ["*", "a", "a"]], ["`", [4,5,6]]]
-["apply", "+", ["`", [2, 3]]]
+["def", "not", ["fn", ["a"], ["if", "a", false, true]]],
 
-//////
+["def", "repl", ["fn",["prompt", "rep"], ["require", ["`", "fs"]]]]
 
-["eval", ["read-string", ["`", "[\"+\", 2, 3]"]]]
-["println", ["`", "hello world"], 123, null, {"abc": 123}]
-*/
+]
 

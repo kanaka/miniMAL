@@ -53,7 +53,8 @@ function EVAL(ast, env) {
         f.ast = [ast[2], env, ast[1]]; // f.ast compresses more than f.data
         return f;
     } else {                      // invoke list form
-        var el = eval_ast_or_bind(ast, env), f = el[0];
+        var el = eval_ast_or_bind(ast, env);
+        var f = el[0];
         if (f.ast) {
             ast = f.ast[0];
             env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1))
@@ -73,10 +74,9 @@ E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
 E["map"]   = function(a,b) { return b.map(a); }
-//env["throw"] = function(a,b,C,D) { throw(a); }
 
 // Node specific
-function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
+function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
 require('repl').start({
     prompt: "user> ",
     ignoreUndefined: true,

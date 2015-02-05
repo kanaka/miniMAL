@@ -14,7 +14,8 @@ function EVAL(ast, env) {
     if (!Array.isArray(ast)) return eval_ast(ast, env);
 
     // apply
-    var el = eval_ast(ast, env), f = el[0];
+    var el = eval_ast(ast, env);
+    var f = el[0];
     return f.apply(f, el.slice(1))
 }
 
@@ -25,7 +26,7 @@ E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
 
 // Node specific
-function rep(a,A,B,C) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
+function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
 require('repl').start({
     prompt: "user> ",
     ignoreUndefined: true,

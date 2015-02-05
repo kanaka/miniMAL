@@ -1,10 +1,12 @@
-STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco step6_file step7_quote stepA_interop stepB_web
+STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
+        step6_file step7_quote step8_macros step9_try stepA_interop \
+        stepB_js1k stepB_lib
 
 .SECONDARY:
 
 all: compress
 
-index.html: stepB_web-crush.js
+js1k.html: stepB_js1k-crush.js
 	@echo "<html>" > $@
 	@echo "<body>" >> $@
 	@echo "</body>" >> $@
@@ -34,4 +36,4 @@ compress^%: %-crush.js
 compress: $(foreach s,$(STEPS),compress^$(s))
 
 clean:
-	rm -f index.html *-uglify.js *-crush.js
+	rm -f js1k.html *-uglify.js *-uglify-pretty.js *-crush.js
