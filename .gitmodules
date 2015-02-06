@@ -1,0 +1,3 @@
+[submodule "RegPack"]
+	path = RegPack
+	url = https://github.com/kanaka/RegPack
