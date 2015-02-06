@@ -1,4 +1,4 @@
-var miniMAL = function(E) {
+module.exports = function(E) {
 
 // 2 args: eval_ast, 3 args: env_bind
 function eval_ast_or_bind(ast, env, exprs) {
@@ -23,7 +23,7 @@ function eval_ast_or_bind(ast, env, exprs) {
         : (typeof ast == "string")                   // symbol?
             ? ast in env                             // symbol in env?
                 ? env[ast]                           // lookup symbol
-                : E.throw(ast + " not found") // undefined symbol
+                : E.throw(ast + " not found")        // undefined symbol
                 ///: null[ast]                          // undefined symbol
             : ast;                                   // ast unchanged
 }
@@ -104,23 +104,26 @@ function EVAL(ast, env) {
 }
 
 E = Object.create(E || GLOBAL);
+E["js"]    = eval;
+E["eval"]  = function(a)   { return EVAL(a, E); }
+
+// These could all also be interop
 E["="]     = function(a,b) { return a===b; }
 E["<"]     = function(a,b) { return a<b; }
 E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["eval"]  = function(a)   { return EVAL(a, E); }
 E["throw"] = function(a)   { throw(a); }
-///E["isa"]   = function(a,b) { return a instanceof b; }
-///E["type"]   = function(a) { return typeof a; }
+E["isa"]   = function(a,b) { return a instanceof b; }
+E["type"]  = function(a)   { return typeof a; }
+E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
 
-// These could also be interop
 ///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 ///E["map"]   = function(a,b) { return b.map(a); }
-///E["read-string"] = function(a) { return JSON.parse(a); }
-///E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
-///E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
+E["read-string"] = function(a) { return JSON.parse(a); }
+E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
+E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
 // Lib specific
 return {
@@ -128,9 +131,4 @@ return {
     rep : function (a) {
         return JSON.stringify(EVAL(JSON.parse(a), E));
     }};
-
-}
-
-if (module !== undefined) {
-    module.exports = miniMAL;
 }

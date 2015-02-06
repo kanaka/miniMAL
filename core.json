@@ -1,13 +1,37 @@
 ["do",
 
+["def", "map", ["fn", ["a", "b"], [".", "b", ["`", "map"], "a"]]],
+["def", "not", ["fn", ["a"], ["if", "a", false, true]]],
+
 ["def", "nil?", ["fn", ["a"], ["=", null, "a"]]],
 ["def", "true?", ["fn", ["a"], ["=", true, "a"]]],
 ["def", "false?", ["fn", ["a"], ["=", false, "a"]]],
-["def", "string?", ["fn", ["a"], ["if", ["=", "a", null], false, ["=", ["`", "String"], [".-", [".-", "a", ["`", "constructor"]], ["`", "name"]]]]]],
+["def", "string?", ["fn", ["a"],
+    ["if", ["=", "a", null],
+        false,
+        ["=", ["`", "String"],
+              [".-", [".-", "a", ["`", "constructor"]],
+                     ["`", "name"]]]]]],
 
-["def", "pr-str", ["fn", ["&", "a"], [".", "a", ["`", "join"], ["`", " "]]]],
-["def", "str", ["fn", ["&", "a"], [".", "a", ["`", "join"], ["`", ""]]]],
-["def", "println", ["fn", ["&", "a"], ["apply", [".-", "console", ["`", "log"]], "a"]]],
+["def", "pr-list*", ["fn", ["a", "pr", "sep"],
+    [".", ["map", ["fn", ["x"],
+                      ["if", "pr",
+                          [".", "JSON", ["`", "stringify"], "x"],
+                          ["if", ["string?", "x"],
+                              "x",
+                              [".", "JSON", ["`", "stringify"], "x"]]]],
+                  "a"],
+          ["`", "join"], "sep"]]],
+["def", "pr-str", ["fn", ["&", "a"],
+    ["pr-list*", "a", true, ["`", " "]]]],
+["def", "str", ["fn", ["&", "a"],
+    ["pr-list*", "a", false, ["`", ""]]]],
+["def", "prn", ["fn", ["&", "a"],
+    [".", "console", ["`", "log"],
+        ["pr-list*", "a", true, ["`", " "]]]]],
+["def", "println", ["fn", ["&", "a"],
+    [".", "console", ["`", "log"],
+        ["pr-list*", "a", false, ["`", " "]]]]],
 
 ["def", ">=", ["fn", ["a", "b"], ["if", ["<", "a", "b"], false, true]]],
 ["def", ">", ["fn", ["a", "b"], ["if", [">=", "a", "b"], ["if", ["=", "a", "b"], false, true], false]]],
@@ -31,9 +55,8 @@
 ["def", "count", ["fn", ["a"], [".-", "a", "length"]]],
 
 ["def", "apply", ["fn", ["a", "b"], [".", "a", ["`", "apply"], "a", "b"]]],
-["def", "map", ["fn", ["a", "b"], [".", "b", ["`", "map"], "a"]]],
 
-["def", "not", ["fn", ["a"], ["if", "a", false, true]]],
+["def", "typeof", ["fn", ["a"], ["js", ["str", ["`", "typeof "], ["pr-str", "a"]]]]],
 
 ["def", "repl", ["fn",["prompt", "rep"], ["require", ["`", "fs"]]]]
 
