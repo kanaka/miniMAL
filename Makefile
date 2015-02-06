@@ -4,7 +4,7 @@ STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
 
 .SECONDARY:
 
-all: crush regpack stats miniMAL-min.js
+all: crush regpack stats miniMAL-min.js miniMAL-js1k.js
 
 #
 # Uglify
@@ -54,6 +54,9 @@ stats^%: %.js %-uglify.js %-crush.js %-regpack.js
 # Web
 #
 miniMAL-min.js: stepB_web-regpack.js
+	cp $< $@
+
+miniMAL-js1k.js: stepB_js1k-regpack.js
 	cp $< $@
 
 
