@@ -4,7 +4,7 @@ STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
 
 .SECONDARY:
 
-all: crush regpack stats
+all: crush regpack stats miniMAL-min.js
 
 #
 # Uglify
@@ -29,6 +29,8 @@ node_modules/jscrush:
 %-crush.js: %-uglify.js node_modules/jscrush
 	cat $< | node_modules/jscrush/bin/jscrush > $@
 
+crush^%: %-crush.js
+	@true
 
 #
 # RegPack
@@ -39,17 +41,26 @@ RegPack/node_modules/minimist:
 %-regpack.js: %-uglify.js RegPack/node_modules/minimist
 	node ./RegPack/regPack.js $< > $@
 
-
-.PHONY: crush regpack stats
-crush: $(foreach s,$(STEPS),crush^$(s))
-crush^%: %-crush.js
-	@true
-regpack: $(foreach s,$(STEPS),regpack^$(s))
 regpack^%: %-regpack.js
 	@true
-stats: $(foreach s,$(STEPS),stats^$(s))
+
+#
+# Stats
+#
 stats^%: %.js %-uglify.js %-crush.js %-regpack.js
 	@wc $^ | grep -v "total"
+
+#
+# Web
+#
+miniMAL-min.js: stepB_web-regpack.js
+	cp $< $@
+
+
+.PHONY: crush regpack stats clean
+crush: $(foreach s,$(STEPS),crush^$(s))
+regpack: $(foreach s,$(STEPS),regpack^$(s))
+stats: $(foreach s,$(STEPS),stats^$(s))
 
 clean:
 	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js
