@@ -103,7 +103,7 @@ function EVAL(ast, env) {
   }
 }
 
-E = Object.create(E || window);
+E = Object.create(E || this);
 E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
 
@@ -114,20 +114,21 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["throw"] = function(a)   { throw(a); }
 E["isa"]   = function(a,b) { return a instanceof b; }
-E["type"]  = function(a)   { return typeof a; }
+///E["type"]  = function(a)   { return typeof a; }
 E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
-
 ///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 ///E["map"]   = function(a,b) { return b.map(a); }
+E["throw"] = function(a)   { throw(a); }
+E["del"]   = function(a,b) { return delete a[b]; }
+
 ///E["read-string"] = function(a) { return JSON.parse(a); }
 ///E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
 ///E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
 // Lib specific
 return {
-    eval: function(x) { return EVAL(x, E); },
+    eval: function (x) { return EVAL(x, E); },
     rep : function (a) {
         return JSON.stringify(EVAL(JSON.parse(a), E));
     }};

@@ -4,7 +4,7 @@ STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
 
 .SECONDARY:
 
-all: crush regpack stats miniMAL-min.js miniMAL-js1k.js
+all: crush regpack miniMAL-min.js miniMAL-js1k.js miniMAL
 
 #
 # Uglify
@@ -58,6 +58,14 @@ miniMAL-min.js: stepB_web-regpack.js
 
 miniMAL-js1k.js: stepB_js1k-regpack.js
 	cp $< $@
+
+#
+# Node
+#
+miniMAL: stepA_interop-regpack.js
+	echo "#!/usr/bin/env node" > $@
+	cat $< >> $@
+	chmod +x $@
 
 
 .PHONY: crush regpack stats clean

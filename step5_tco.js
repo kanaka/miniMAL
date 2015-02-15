@@ -21,7 +21,8 @@ function eval_ast_or_bind(ast, env, exprs) {
         : (typeof ast == "string")                   // symbol?
             ? ast in env                             // symbol in env?
                 ? env[ast]                           // lookup symbol
-                : null[ast]                          // undefined symbol
+                : E.throw(ast + " not found")        // undefined symbol
+                ///: null[ast]                          // undefined symbol
             : ast;                                   // ast unchanged
 }
 
@@ -73,6 +74,7 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
+E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 E["map"]   = function(a,b) { return b.map(a); }
 
 // Node specific

@@ -77,22 +77,26 @@ function EVAL(ast, env) {
 }
 
 E = Object.create(this);
+E["eval"]  = function(a)   { return EVAL(a, E); }
+
+// These could all also be interop
 E["="]     = function(a,b) { return a===b; }
 E["<"]     = function(a,b) { return a<b; }
 E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["eval"]  = function(a)   { return EVAL(a, E); }
-///E["throw"] = function(a)   { throw(a); }
 ///E["isa"]   = function(a,b) { return a instanceof b; }
-///E["type"]   = function(a) { return typeof a; }
-
-// These could also be interop
+///E["type"]  = function(a)   { return typeof a; }
+///E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
 ///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 E["map"]   = function(a,b) { return b.map(a); }
+///E["throw"] = function(a)   { throw(a); }
+///E["del"]   = function(a,b) { return delete a[b]; }
+
 ///E["read-string"] = function(a) { return JSON.parse(a); }
 ///E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
+///E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
 // Web specific
 b.innerHTML = '<textarea rows=9 cols=60>["let",["m",["`","mini"]],["+","m",["`","MAL"]]]\n["def","fac",["fn",["n"],["if","n",["*","n",["fac",["-","n",1]]],1]]]\n["map","fac",["`",[7,8,9]]]\n[".","Math",["`","random"]]</textarea><textarea rows=9 cols=60></textarea>';

@@ -104,6 +104,8 @@ function EVAL(ast, env) {
 E = Object.create(GLOBAL);
 E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
+// TODO: figure out why GLOBAL doesn't have this when non-interactive
+E["require"] = require;
 
 // These could all also be interop
 E["="]     = function(a,b) { return a===b; }
@@ -112,22 +114,27 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["throw"] = function(a)   { throw(a); }
-///E["isa"]   = function(a,b) { return a instanceof b; }
-///E["type"]  = function(a)   { return typeof a; }
+E["isa"]   = function(a,b) { return a instanceof b; }
+E["type"]  = function(a)   { return typeof a; }
 E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
-
 ///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 ///E["map"]   = function(a,b) { return b.map(a); }
+E["throw"] = function(a)   { throw(a); }
+E["del"]   = function(a,b) { return delete a[b]; }
+
 E["read-string"] = function(a) { return JSON.parse(a); }
 E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
 E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
 // Node specific
 function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
-rep('["load-file", ["`", "core.json"]]');
-require('repl').start({
-    prompt: "user> ",
-    ignoreUndefined: true,
-    eval: function(l,c,f,cb) { console.log(rep(l.slice(1,l.length-2))); cb() }
-});
+if (process.argv.length > 2) {
+    E['*ARGV*'] = process.argv.slice(3);
+    rep('["load-file", ["`", "' + process.argv[2] + '"]]');
+} else {
+    require('repl').start({
+        prompt: "user> ",
+        ignoreUndefined: true,
+        eval: function(l,c,f,cb) { console.log(rep(l.slice(1,l.length-2))); cb() }
+    });
+}
