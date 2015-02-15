@@ -42,10 +42,8 @@
 
 ["def", "list", ["fn", ["&", "a"], "a"]],
 ["def", "list?", ["fn", ["a"], [".", "Array", ["`", "isArray"], "a"]]],
-
 ["def", "get", ["fn", ["a", "b"], [".-", "a", "b"]]],
 ["def", "set", ["fn", ["a", "b", "c"], [".-", "a", "b", "c"]]],
-["def", "assoc!", ["fn", ["a", "b", "c"], ["do", ["set", "a", "b", "c"], "a"]]],
 ["def", "contains?", ["fn", ["a", "b"], [".", "a", ["`", "hasOwnProperty"], "b"]]],
 ["def", "keys", ["fn", ["a"], [".", "Object", ["`", "keys"], "a"]]],
 ["def", "vals", ["fn", ["a"], ["map",["fn",["k"],["get","a","k"]],["keys", "a"]]]],
@@ -58,22 +56,42 @@
         ["`", "apply"], ["list"], "a"]]],
 ["def", "nth", "get"],
 ["def", "first", ["fn", ["a"], ["nth", "a", 0]]],
+["def", "rest", ["fn", ["a"], [".", "a", ["`", "slice"], 1]]],
+["def", "empty?", ["fn", ["a"], ["if", ["list?", "a"], ["if", ["=", 0, [".-", "a", ["`", "length"]]], true, false], ["=", "a", null]]]],
+["def", "count", ["fn", ["a"],
+  [".-", "a", ["`", "length"]]]],
 ["def", "slice", ["fn", ["a", "start", "&", "endl"],
   ["let", ["end", ["if", ["count", "endl"],
                     ["get", "endl", 0],
                     [".-", "a", ["`", "length"]]]],
     [".", "a", ["`", "slice"], "start", "end"]]]],
-["def", "rest", ["fn", ["a"], [".", "a", ["`", "slice"], 1]]],
-["def", "empty?", ["fn", ["a"], ["if", ["list?", "a"], ["if", ["=", 0, [".-", "a", ["`", "length"]]], true, false], ["=", "a", null]]]],
-["def", "count", ["fn", ["a"],
-  [".-", "a", ["`", "length"]]]],
+
+["def", "apply", ["fn", ["a", "b"], [".", "a", ["`", "apply"], "a", "b"]]],
+
+["def", "and", ["~", ["fn", ["&", "xs"],
+  ["if", ["empty?", "xs"],
+    true,
+    ["if", ["=", 1, ["count", "xs"]],
+      ["first", "xs"],
+      ["list", ["`", "let"], ["list", ["`", "and_FIXME"], ["first", "xs"]],
+        ["list", ["`", "if"], ["`", "and_FIXME"],
+          ["concat", ["`", ["and"]], ["rest", "xs"]],
+          ["`", "and_FIXME"]]]]]]]],
+
+["def", "or", ["~", ["fn", ["&", "xs"],
+  ["if", ["empty?", "xs"],
+    null,
+    ["if", ["=", 1, ["count", "xs"]],
+      ["first", "xs"],
+      ["list", ["`", "let"], ["list", ["`", "or_FIXME"], ["first", "xs"]],
+        ["list", ["`", "if"], ["`", "or_FIXME"],
+          ["`", "or_FIXME"],
+          ["concat", ["`", ["or"]], ["rest", "xs"]]]]]]]]],
 
 ["def", "typeof", ["fn", ["a"],
   ["js", ["str", ["`", "typeof "], ["pr-str", "a"]]]]],
 
-["def", "apply", ["fn", ["a", "b"], [".", "a", ["`", "apply"], "a", "b"]]],
 
 null
-
 ]
 
