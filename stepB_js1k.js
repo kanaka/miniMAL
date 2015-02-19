@@ -67,8 +67,7 @@ function EVAL(ast, env) {
         var f = el[0];
         if (f.ast) {
             ast = f.ast[0];
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1))
-            // TCO
+            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)); // TCO
         } else {
             return f.apply(f, el.slice(1))
         }
@@ -76,7 +75,8 @@ function EVAL(ast, env) {
   }
 }
 
-E = Object.create(this);
+E = Object.create(E || this);
+E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
 
 // These could all also be interop

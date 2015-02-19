@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+var miniMAL = require('./miniMAL-node.js'),
+    env = GLOBAL,
+    m = miniMAL(env);
+
+env["require"] = require;
+env["read-string"] = function(a) { return JSON.parse(a); };
+env["slurp"] = function(a) { return require('fs').readFileSync(a,'utf-8'); };
+env["load-file"] = function(a) {
+    // Enable shebang usage (ignore shebang line)
+    var json = env["slurp"](a).replace(/^#![^\n]*\n/, "", "");
+    return m.eval(JSON.parse(json));
+};
+
+// Node specific
+if (process.argv.length > 2) {
+    GLOBAL['*ARGV*'] = process.argv.slice(3);
+    m.rep('["load-file", ["`", "' + process.argv[2] + '"]]');
+} else {
+    require('repl').start({
+        prompt: "user> ",
+        ignoreUndefined: true,
+        eval: function(l,c,f,cb) { console.log(m.rep(l.slice(1,l.length-2))); cb() }
+    });
+}
+

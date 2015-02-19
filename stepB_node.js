@@ -94,8 +94,7 @@ function EVAL(ast, env) {
         var f = el[0];
         if (f.ast) {
             ast = f.ast[0];
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1))
-            // TCO
+            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)); // TCO
         } else {
             return f.apply(f, el.slice(1))
         }
@@ -107,7 +106,7 @@ E = Object.create(E || GLOBAL);
 E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
 // TODO: figure out why GLOBAL doesn't have this when non-interactive
-E["require"] = require;
+///E["require"] = require;
 
 // These could all also be interop
 E["="]     = function(a,b) { return a===b; }
@@ -117,20 +116,21 @@ E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
 E["isa"]   = function(a,b) { return a instanceof b; }
-E["type"]  = function(a)   { return typeof a; }
+///E["type"]  = function(a)   { return typeof a; }
 E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
 ///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 ///E["map"]   = function(a,b) { return b.map(a); }
 E["throw"] = function(a)   { throw(a); }
+E["del"]   = function(a,b) { return delete a[b]; }
 
-E["read-string"] = function(a) { return JSON.parse(a); }
-E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
-E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
+///E["read-string"] = function(a) { return JSON.parse(a); }
+///E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
+///E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
+
+E["rep"] = function (a) {
+    return JSON.stringify(EVAL(JSON.parse(a), E));
+}
 
 // Lib specific
-return {
-    eval: function(x) { return EVAL(x, E); },
-    rep : function (a) {
-        return JSON.stringify(EVAL(JSON.parse(a), E));
-    }};
+return E;
 }

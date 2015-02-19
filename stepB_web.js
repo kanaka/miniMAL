@@ -94,8 +94,7 @@ function EVAL(ast, env) {
         var f = el[0];
         if (f.ast) {
             ast = f.ast[0];
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1))
-            // TCO
+            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)); // TCO
         } else {
             return f.apply(f, el.slice(1))
         }
@@ -126,10 +125,10 @@ E["del"]   = function(a,b) { return delete a[b]; }
 ///E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
 ///E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
+E["rep"] = function (a) {
+    return JSON.stringify(EVAL(JSON.parse(a), E));
+}
+
 // Lib specific
-return {
-    eval: function (x) { return EVAL(x, E); },
-    rep : function (a) {
-        return JSON.stringify(EVAL(JSON.parse(a), E));
-    }};
+return E;
 }
