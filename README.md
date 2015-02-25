@@ -7,10 +7,11 @@ JavaScript.
 
 I originally started implementing a tiny Lisp interpreter as a quick
 hack to submit to the [2015 JS1K
-competition](http://js1k.com/2015-hypetrain/). However, I soon
-realized that I could fit far more functionality into 1024 bytes of
-JavaScript than I expected and so miniMAL was born as a "full-fledged"
-Lisp in its own right.
+competition](http://js1k.com/2015-hypetrain/)
+([demo 2209](http://js1k.com/2015-hypetrain/demo/2209)). However,
+I soon realized that I could fit far more functionality into 1024
+bytes of JavaScript than I expected and so miniMAL was born as
+a "full-fledged" Lisp in its own right.
 
 The design of miniMAL started with
 [mal](https://github.com/kanaka/mal) (a Clojure-insipred pedagogical
@@ -106,6 +107,15 @@ You can also play around with miniMAL at the [online "REPL"](http://kanaka.githu
 =>49
 ```
 
+* **Variadic Functions**: miniMAL functions/lambdas can support
+  variable numbers of parameters using the Clojure style "&"
+  delimeter.
+```
+["def", "ignore1", ["fn", ["a", "&", "b"], "b"]]
+["ignore1", 1, 2, 3]
+=>[2,3]
+```
+
 * **Lexical scope and let blocks**: miniMAL has full lexical scoping
   within let blocks and lambdas. In the following example, "add5" is
   defined as a function that refers to a lexicallly scoped variable
@@ -133,13 +143,14 @@ You can also play around with miniMAL at the [online "REPL"](http://kanaka.githu
 =>[11,12,13]
 ```
 
-* **Automatic tail call optimization**: when a function calls itself
-  (recursion) as the very last thing it does (tail call), this is
-  automatically optimized so that the call does not consume any stack.
-  This allows recursion to be as efficient as iteration. In this
-  example, "sum1" is not tail optimized because an addition happens
-  after the recursive call to "sum1". "sum2" is tail optimized by
-  miniMAL because the recursive "sum2" call happens in tail position.
+* **Automatic tail call optimization (TCO)**: when a function calls
+  itself (recursion) as the very last thing it does (tail call), this
+  is automatically optimized so that the call does not consume any
+  stack.  This allows recursion to be as efficient as iteration. In
+  this example, "sum1" is not tail optimized because an addition
+  happens after the recursive call to "sum1". "sum2" is tail optimized
+  by miniMAL because the recursive "sum2" call happens in tail
+  position.
 ```
 ["def", "sum1", ["fn", ["n"], ["if", ["=", "n", 0], 0, ["+", "n", ["sum1", ["-", "n", 1]]]]]]
 ["sum1", 10000]

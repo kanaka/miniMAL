@@ -1,3 +1,7 @@
+// miniMAL
+// Copyright (C) 2014 Joel Martin
+// Licensed under MPL 2.0
+
 // 2 args: eval_ast, 3 args: env_bind
 function eval_ast_or_bind(ast, env, exprs) {
     if (exprs) {

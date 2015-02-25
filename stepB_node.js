@@ -1,3 +1,7 @@
+// miniMAL
+// Copyright (C) 2014 Joel Martin
+// Licensed under MPL 2.0
+
 module.exports = function(E) {
 
 // 2 args: eval_ast, 3 args: env_bind

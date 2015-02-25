@@ -62,6 +62,9 @@ miniMAL-min.js: stepB_web-regpack.js
 miniMAL-js1k.js: stepB_js1k-regpack.js
 	cp $< $@
 
+miniMAL-js1k.b64: stepB_js1k-regpack.js
+	node -e "console.log(require('fs').readFileSync('$<').toString('base64'))" > $@
+
 #
 # Node
 #
