@@ -84,7 +84,7 @@ You can also play around with miniMAL at the [online "REPL"](http://kanaka.githu
 * **"Lisp-0"**: Functions, symbols and strings
   are all in the same namespace making miniMAL a "Lisp-0". In
   contrast, Lisp-2 languages have functions and symbols (and strings)
-  are in separate namespaces. In Lisp-1 languages functions and
+  that are in separate namespaces. In Lisp-1 languages functions and
   symbols are in the same namespace (and strings are still separate).
   Strings in miniMAL are just quoted symbols.
 ```
@@ -161,9 +161,9 @@ You can also play around with miniMAL at the [online "REPL"](http://kanaka.githu
 ```
 
 * **JavaScript Interop**: miniMAL uses native JavaScript types (e.g.
-  lists are implemented arrays) and supports JavaScript interop using
-  the method call function (`.`) and the property get/set function
-  (".-").
+  lists are implemented as arrays) and supports JavaScript interop
+  using the method call function (`"."`) and the property get/set
+  function (`".-"`).
 ```
 ["def", "randInt", ["fn", ["max"], ["parseInt", ["*", "max", [".", "Math", ["`", "random"]]]]]]
 ["randInt", 100]
