@@ -1,6 +1,7 @@
 ## miniMAL
 
-A Clojure inspired Lisp implemented in 1024 bytes of JavaScript.
+A Clojure inspired Lisp implemented in less than 1024 bytes of
+JavaScript.
 
 ### Rationale
 
