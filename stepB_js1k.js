@@ -75,7 +75,7 @@ function EVAL(ast, env) {
   }
 }
 
-E = Object.create(E || this);
+E = Object.create(this);
 E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
 
