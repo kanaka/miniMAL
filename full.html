@@ -1,83 +1,8 @@
 <html>
-<style>
-button {
-    width: 200px;
-    font-size: 20px;
-}
-textarea {
-    font: 12px monospace;
-}
-</style>
+<head>
+<meta http-equiv="refresh" content="0; url=http://kanaka.github.io/miniMAL" />
+</head>
 <body>
-    <a href="https://github.com/kanaka/miniMAL"><button id=bar><b>miniMAL</b></button></a>
-    <br><br>
-    <div>
-        A Lisp implemented in <a href="miniMAL-min.js">&lt; 1 KB of JavaScript</a> with macros, TCO, interop and exception handling.
-    </div>
-    <br>
-    <div>
-        <b>"REPL":</b>
-    </div>
-    <textarea rows=40 cols=80 wrap="off"></textarea>
-    <textarea rows=40 cols=40 wrap="off"></textarea>
+The miniMAL online REPL is <a href="http://kanaka.github.io/miniMAL">here</a>.
 </body>
-<script src="miniMAL-min.js"></script>
-<!--<script src="stepB_web.js"></script>-->
-<script>
-    var m = miniMAL(window);
-
-    var repl = function(){
-        t[1].value = t[0].value.split('\n').map(function(a) {
-            return a ? m.rep(a) : '';
-        }).join('\n');
-    };
-
-    var example_code = [
-        '["`", "--- Basics ---"]',
-        '["+",2,3]',
-        '["def","a",7]',
-        '["let",["b",2,"c","a"],["*","b","c"]]',
-        '["if",["=",5,5],7,8]',
-        '["def","sqr",["fn",["a"],["*","a","a"]]]',
-        '["sqr",7]',
-        '["def","list",["fn",["&","a"],"a"]]',
-        '["list", 1, true, false, null]',
-        '[".-", {"foo": "bar"}, ["`", "foo"]]',
-        '["eval",["`",["+",2,["sqr",3]]]]',
-        '',
-        '["`", "--- Functional Programming ---"]',
-        '["def","apply",["fn",["a","b"],[".","a",["`","apply"],"a","b"]]]',
-        '["apply","+",["`",[4,5]]]',
-        '["def", "map", ["fn", ["a", "b"], [".", "b", ["`", "map"], "a"]]]',
-        '["def","fac",["fn",["n"],["if","n",["*","n",["fac",["-","n",1]]],1]]]',
-        '["map","fac",["`",[7,8,9]]]',
-        '',
-        '["`", "--- JS Interop ---"]',
-        '["def","randInt",["fn",["max"],["parseInt",["*","max",[".", "Math", ["`", "random"]]]]]]',
-        '["def","rand-hsl",["fn",[],["+",["+",["`","hsl("],["randInt",360]],["`",",50%,70%)"]]]]',
-        '["def","set-style",["fn",["o","k","v"],[".-",[".-","o",["`","style"]],"k","v"]]]',
-        '["set-style","bar",["`","backgroundColor"],["rand-hsl"]]',
-        '',
-        '["`", "--- TCO ---"]',
-        '["def","sum",["fn",["n","a"],["if",["=","n",0],"a",["sum",["-","n",1],["+","n","a"]]]]]',
-        '["sum",10,0]',
-        '["sum",1000,0]',
-        '',
-        '["`", "--- Exception Handling ---"]',
-        '["try","abc",["catch","exc",["list",["`","exc was:"],"exc"]]]',
-        '["try",["throw",123],["catch","exc",["list",["`","exc was:"],"exc"]]]',
-        '',
-        '["`", "--- Macros ---"]',
-        '["def","unless",["~",["fn",["p","a","b"],["list",["`","if"],"p","b","a"]]]]',
-        '["unless",false,7,8]',
-        '["unless",true,7,8]',
-    ].join("\n");
-
-    var b = document.body;
-    var bar = document.getElementById('bar');
-    var t = document.getElementsByTagName('textarea');
-    t[0].innerHTML = example_code;
-    t[0].onkeyup = repl;
-    repl();
-</script>
 </html>

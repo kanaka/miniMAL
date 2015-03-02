@@ -23,7 +23,9 @@ fairly different from mal so it has become a standalone project.
 
 ### Usage
 
-There are several different ways to use miniMAL:
+You can try out miniMAL with the [online "REPL"](http://kanaka.github.io/miniMAL/).
+
+There are several different ways to use and/or integrate miniMAL:
 
 * **Start a REPL**: run the miniMAL REPL (read-eval-print-loop). Requires
   Node.js.
@@ -64,8 +66,6 @@ var m = miniMAL();
 m.eval(["+", 2, 3]); 
 </script>
 ```
-
-You can also play around with miniMAL at the [online "REPL"](http://kanaka.github.io/miniMAL/full.html).
 
 
 ### Features and Examples
