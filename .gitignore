@@ -1,5 +1,10 @@
+.git
 node_modules
 *-uglify*
 *-crush*
 *-regpack*
+RegPack/.git
+RegPack/node_modules
+old
+notes
 

@@ -1,7 +1,14 @@
 {
-    "name": "mal.json",
-    "version": "0.0.1",
-    "description": "JS1K variant of mal",
+    "name": "minimal-lisp",
+    "version": "0.0.3",
+    "description": "miniMAL: a Clojure-inspired Lisp in < 1024 bytes of JavaScript",
+    "keywords": ["Clojure", "clojure", "Lisp", "lisp", "mal", "make-a-lisp", "1K", "1024", "golf", "JS1K", "js1k", "JSON", "json", "tail-call", "TCO", "macros", "interop", "lexical", "functional"],
+    "homepage": "http://kanaka.github.io/miniMAL",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/kanaka/miniMAL.git"
+    },
+    "license": "MPL-2.0",
     "main": "miniMAL-node.js",
     "bin": "./miniMAL",
     "dependencies": {
