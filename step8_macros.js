@@ -1,3 +1,7 @@
+// miniMAL
+// Copyright (C) 2014 Joel Martin
+// Licensed under MPL 2.0
+
 // 2 args: eval_ast, 3 args: env_bind
 function eval_ast_or_bind(ast, env, exprs) {
     if (exprs) {
@@ -62,6 +66,14 @@ function EVAL(ast, env) {
         ast = ast[2]; // TCO
     } else if (ast[0] == "`") {   // quote (unevaluated)
         return ast[1];
+    } else if (ast[0] == ".-") {  // get or set attribute
+        var el = eval_ast_or_bind(ast.slice(1), env);
+        var x = el[0][el[1]];
+        return 2 in el ? el[0][el[1]] = el[2] : x;
+    } else if (ast[0] == ".") {   // call object method
+        var el = eval_ast_or_bind(ast.slice(1), env);
+        var x = el[0][el[1]];
+        return x.apply(el[0], el.slice(2));
     } else if (ast[0] == "do") {  // multiple forms (for side-effects)
         var el = eval_ast_or_bind(ast.slice(1,ast.length-1), env);
         ast = ast[ast.length-1]; // TCO
@@ -78,8 +90,7 @@ function EVAL(ast, env) {
         var f = el[0];
         if (f.ast) {
             ast = f.ast[0];
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1))
-            // TCO
+            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)); // TCO
         } else {
             return f.apply(f, el.slice(1))
         }
@@ -88,24 +99,32 @@ function EVAL(ast, env) {
 }
 
 E = Object.create(GLOBAL);
+E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
 
+// These could all also be interop
 E["="]     = function(a,b) { return a===b; }
 E["<"]     = function(a,b) { return a<b; }
 E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
-E["map"]   = function(a,b) { return b.map(a); }
+///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
+///E["map"]   = function(a,b) { return b.map(a); }
 
 E["read-string"] = function(a) { return JSON.parse(a); }
 E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
+E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
 // Node specific
 function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
-require('repl').start({
-    prompt: "user> ",
-    ignoreUndefined: true,
-    eval: function(l,c,f,cb) { console.log(rep(l.slice(1,l.length-2))); cb() }
-});
+if (process.argv.length > 2) {
+    E['*ARGV*'] = process.argv.slice(3);
+    rep('["load-file", ["`", "' + process.argv[2] + '"]]');
+} else {
+    require('repl').start({
+        prompt: "user> ",
+        ignoreUndefined: true,
+        eval: function(l,c,f,cb) { console.log(rep(l.slice(1,l.length-2))); cb() }
+    });
+}

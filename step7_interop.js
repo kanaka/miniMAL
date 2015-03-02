@@ -30,32 +30,14 @@ function eval_ast_or_bind(ast, env, exprs) {
             : ast;                                   // ast unchanged
 }
 
-function macroexpand(ast, env) {
-    while (Array.isArray(ast)
-            && (typeof ast[0] == "string")
-            && ast[0] in env
-            && env[ast[0]].ast
-            && env[ast[0]].ast[3]) {
-        ast = env[ast[0]].apply(env[ast[0]], ast.slice(1));
-    }
-    return ast;
-}
-
 function EVAL(ast, env) {
   while (true) {
     //console.log("EVAL:", ast);
     if (!Array.isArray(ast)) return eval_ast_or_bind(ast, env);
 
     // apply
-    ast = macroexpand(ast, env);
-    if (!Array.isArray(ast)) return ast;
-
     if (ast[0] == "def") {        // update current environment
         return env[ast[1]] = EVAL(ast[2], env);
-    } else if (ast[0] == "~") {  // mark as macro
-        var f = EVAL(ast[1], env);  // eval regular function
-        f.ast.push(1); // mark as macro
-        return f;
     } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env);
         for (var i in ast[1]) {
@@ -66,12 +48,6 @@ function EVAL(ast, env) {
         ast = ast[2]; // TCO
     } else if (ast[0] == "`") {   // quote (unevaluated)
         return ast[1];
-    } else if (ast[0] == "try") { // try/catch
-        try {
-            return EVAL(ast[1], env);
-        } catch (e) {
-            return EVAL(ast[2][2], eval_ast_or_bind([ast[2][1]], env, [e]));
-        }
     } else if (ast[0] == ".-") {  // get or set attribute
         var el = eval_ast_or_bind(ast.slice(1), env);
         var x = el[0][el[1]];
@@ -107,8 +83,6 @@ function EVAL(ast, env) {
 E = Object.create(GLOBAL);
 E["js"]    = eval;
 E["eval"]  = function(a)   { return EVAL(a, E); }
-// TODO: figure out why GLOBAL doesn't have this when non-interactive
-E["require"] = require;
 
 // These could all also be interop
 E["="]     = function(a,b) { return a===b; }
@@ -117,13 +91,8 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["isa"]   = function(a,b) { return a instanceof b; }
-E["type"]  = function(a)   { return typeof a; }
-E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
 ///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
 ///E["map"]   = function(a,b) { return b.map(a); }
-E["throw"] = function(a)   { throw(a); }
-E["del"]   = function(a,b) { return delete a[b]; }
 
 E["read-string"] = function(a) { return JSON.parse(a); }
 E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }

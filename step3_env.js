@@ -1,3 +1,7 @@
+// miniMAL
+// Copyright (C) 2014 Joel Martin
+// Licensed under MPL 2.0
+
 function eval_ast(ast, env) {
     // Evaluate the form/ast
     return Array.isArray(ast)                        // list?

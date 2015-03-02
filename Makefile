@@ -1,5 +1,5 @@
 STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
-        step6_file step7_quote step8_macros step9_try stepA_interop \
+        step6_file step7_interop step8_macros step9_try stepA_miniMAL \
         stepB_web stepB_node stepB_js1k
 
 .SECONDARY:
@@ -50,7 +50,10 @@ regpack^%: %-regpack.js
 #
 # Stats
 #
-stats^%: %.js %-uglify.js %-crush.js %-regpack.js
+stats^%: %.js %-regpack.js
+	@wc $^ | grep -v "total"
+
+stats-full^%: %.js %-uglify.js %-crush.js %-regpack.js
 	@wc $^ | grep -v "total"
 
 #
@@ -71,10 +74,11 @@ miniMAL-js1k.b64: stepB_js1k-regpack.js
 miniMAL-node.js: stepB_node-regpack.js
 	cp $< $@
 
-.PHONY: crush regpack stats clean
+.PHONY: crush regpack stats stats-full clean
 crush: $(foreach s,$(STEPS),crush^$(s))
 regpack: $(foreach s,$(STEPS),regpack^$(s))
 stats: $(foreach s,$(STEPS),stats^$(s))
+stats-full: $(foreach s,$(STEPS),stats-full^$(s))
 
 clean:
-	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js
+	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64

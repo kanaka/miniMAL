@@ -1,3 +1,7 @@
+// miniMAL
+// Copyright (C) 2014 Joel Martin
+// Licensed under MPL 2.0
+
 function EVAL(ast, env) {
     return ast;
 }
