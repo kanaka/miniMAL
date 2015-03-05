@@ -51,7 +51,7 @@ chmod +x hello2.json
 
 * **Node.js library**: you can use the miniMAL Node.js library to
   evaluate miniMAL source code in a regular Node.js program.
-```
+```javascript
 var miniMAL = require('./miniMAL-node.js'),
     m = miniMAL();
 m.eval(["+", 2, 3]); 
@@ -59,7 +59,7 @@ m.eval(["+", 2, 3]);
 
 * **Web library**: you can use the miniMAL web library to evaluate
   miniMAL code in your web application.
-```
+```html
 <script src="miniMAL-min.js"></script>
 <script>
 var m = miniMAL();
@@ -72,7 +72,7 @@ m.eval(["+", 2, 3]);
 
 * **JSON source**: the source code of miniMAL programs is just plain
   JSON (JavaScript object notation).
-```
+```json
 ["+", 2, 3]
 =>5
 ["if", ["=", 5, 5], 7, 8]
@@ -87,7 +87,7 @@ m.eval(["+", 2, 3]);
   that are in separate namespaces. In Lisp-1 languages functions and
   symbols are in the same namespace (and strings are still separate).
   Strings in miniMAL are just quoted symbols.
-```
+```json
 ["def", "a_symbol", 3]
 =>3
 "a_symbol"
@@ -99,7 +99,7 @@ m.eval(["+", 2, 3]);
 ```
 
 * **Lambdas**: miniMAL has anonymous and named functions.
-```
+```json
 [ ["fn", ["a"], ["*", "a", "a"]], 8]
 =>64
 ["def", "sqr", ["fn", ["a"], ["*", "a", "a"]]]
@@ -110,7 +110,7 @@ m.eval(["+", 2, 3]);
 * **Variadic Functions**: miniMAL functions/lambdas can support
   variable numbers of parameters using the Clojure style "&"
   delimeter.
-```
+```json
 ["def", "ignore1", ["fn", ["a", "&", "b"], "b"]]
 ["ignore1", 1, 2, 3]
 =>[2,3]
@@ -123,7 +123,7 @@ m.eval(["+", 2, 3]);
   definition of the function happened within same lexical scope
   (it is a function closure), but it is not accessible outside the
   "let" block lexical scope.
-```
+```json
 ["def", "add5", ["let", ["x", 5], ["fn", ["a"], ["+", "x", "a"]]]]
 ["add5", 7]
 =>12
@@ -134,7 +134,7 @@ m.eval(["+", 2, 3]);
 * **First class functions/lambdas**: functions/lambdas are first class
   values in miniMAL. They can be bound to variables, passed into and
   returned from functions just like normal values.
-```
+```json
 ["def", "addX", ["fn", ["X"], ["fn", ["a"], ["+", "X", "a"]]]]
 ["def", "add9", ["addX", 9]]
 ["add9", 20]
@@ -151,7 +151,7 @@ m.eval(["+", 2, 3]);
   happens after the recursive call to "sum1". "sum2" is tail optimized
   by miniMAL because the recursive "sum2" call happens in tail
   position.
-```
+```json
 ["def", "sum1", ["fn", ["n"], ["if", ["=", "n", 0], 0, ["+", "n", ["sum1", ["-", "n", 1]]]]]]
 ["sum1", 10000]
 =>__ERROR: stack overflow__
@@ -164,7 +164,7 @@ m.eval(["+", 2, 3]);
   lists are implemented as arrays) and supports JavaScript interop
   using the method call function (`"."`) and the property get/set
   function (`".-"`).
-```
+```json
 ["def", "randInt", ["fn", ["max"], ["parseInt", ["*", "max", [".", "Math", ["`", "random"]]]]]]
 ["randInt", 100]
 =>16
@@ -183,7 +183,7 @@ space for an online "REPL".
 
 * **Exception Handling**: miniMAL supports try/catch/throw style
   exception handling. The thrown exceptions can be any arbitrary type.
-```
+```json
 ["try", "abc", ["catch", "exc", ["list", ["`", "exc was:"], "exc"]]]
 =>["exc was:","abc not found"]
 ["try", ["throw", 123], ["catch", "exc", ["list", ["`", "exc was:"], "exc"]]]
@@ -204,7 +204,7 @@ space for an online "REPL".
   would all be evaluated before the "unless" function was called.
   However, defining "unless" as a macro allows either the true or
   false position to be evaluated (and the conditional of course).
-```
+```json
 ["def", "unless", ["~", ["fn", ["p", "a", "b"], ["list", ["`", "if"], "p", "b", "a"]]]]
 ["unless", false, 7, 8]
 =>7
