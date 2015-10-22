@@ -1,0 +1,134 @@
+;; Load core.json
+["load-file", ["`", "core.json"]]
+
+;; Testing non-macro function
+["not", ["=", 1, 1]]
+;=>false
+;;; This should fail if it is a macro
+["not", ["=", 1, 2]]
+;=>true
+
+
+;; Testing trivial macros
+["def", "one", ["~", ["fn", [], 1]]]
+["one"]
+;=>1
+["def", "two", ["~", ["fn", [], 2]]]
+["two"]
+;=>2
+
+;; Testing unless macros
+["def", "unless", ["~", ["fn", ["pred", "a", "b"], ["list", ["`", "if"], "pred", "b", "a"]]]]
+["unless", false, 7, 8]
+;=>7
+["unless", true, 7, 8]
+;=>8
+["def", "unless2", ["~", ["fn", ["pred", "a", "b"], ["list", ["`", "if"], ["list", ["`", "not"], "pred"], "a", "b"]]]]
+["unless2", false, 7, 8]
+;=>7
+["unless2", true, 7, 8]
+;=>8
+
+;;;;; Testing macroexpand
+;;;["macroexpand", ["unless2", 2, 3, 4]]
+;;;;=>[if [not 2] 3 4]
+
+
+;; Testing nth, first and rest functions
+
+["nth", ["`", [1]], 0]
+;=>1
+["nth", ["`", [1, 2]], 1]
+;=>2
+;;;["def", "x", ["`", "x"]]
+;;;["def", "x", ["nth", ["`", [1, 2]], 2]]
+;;;"x"
+;;;;=>"x"
+
+["first", ["`", []]]
+;=>undefined
+["first", ["`", [6]]]
+;=>6
+["first", ["`", [7, 8, 9]]]
+;=>7
+
+["rest", ["`", []]]
+;=>[]
+["rest", ["`", [6]]]
+;=>[]
+["rest", ["`", [7, 8, 9]]]
+;=>[8,9]
+
+
+;; Testing or macro
+["or"]
+;=>null
+["or", 1]
+;=>1
+["or", 1, 2, 3, 4]
+;=>1
+["or", false, 2]
+;=>2
+["or", false, null, 3]
+;=>3
+["or", false, null, false, false, null, 4]
+;=>4
+["or", false, null, 3, false, null, 4]
+;=>3
+["or", ["or", false, 4]]
+;=>4
+
+;; Testing cond macro
+
+["cond"]
+;=>null
+["cond", true, 7]
+;=>7
+["cond", true, 7, true, 8]
+;=>7
+["cond", false, 7, true, 8]
+;=>8
+["cond", false, 7, false, 8, ["`", "else"], 9]
+;=>9
+["cond", false, 7, ["=", 2, 2], 8, ["`", "else"], 9]
+;=>8
+["cond", false, 7, false, 8, false, 9]
+;=>null
+
+;;;;;
+;;;;; Loading core.mal
+;;;["load-file", "../core.mal"]
+
+;; Testing and macro
+["and"]
+;=>true
+["and", 1]
+;=>1
+["and", 1, 2]
+;=>2
+["and", 1, 2, 3]
+;=>3
+["and", 1, 2, 3, 4]
+;=>4
+["and", 1, 2, 3, 4, false]
+;=>false
+["and", 1, 2, 3, 4, false, 5]
+;=>false
+
+;;;;; Testing -> macro
+;;;
+;;;[-> 7]
+;;;;=>7
+;;;[-> [list 7 8 9] first]
+;;;;=>7
+;;;[-> [list 7 8 9] [first]]
+;;;;=>7
+;;;[-> [list 7 8 9] first [+ 7]]
+;;;;=>14
+;;;[-> [list 7 8 9] rest [rest] first [+ 7]]
+;;;;=>16
+
+;; Testing EVAL in let*
+
+["let", ["x", ["or", null, "yes"]], "x"]
+;=>"yes"

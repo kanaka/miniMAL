@@ -30,32 +30,14 @@ function eval_ast_or_bind(ast, env, exprs) {
             : ast;                                   // ast unchanged
 }
 
-function macroexpand(ast, env) {
-    while (Array.isArray(ast)
-            && (typeof ast[0] == "string")
-            && ast[0] in env
-            && env[ast[0]].ast
-            && env[ast[0]].ast[3]) {
-        ast = env[ast[0]].apply(env[ast[0]], ast.slice(1));
-    }
-    return ast;
-}
-
 function EVAL(ast, env) {
   while (true) {
     //console.log("EVAL:", ast);
     if (!Array.isArray(ast)) return eval_ast_or_bind(ast, env);
 
     // apply
-    ast = macroexpand(ast, env);
-    if (!Array.isArray(ast)) return ast;
-
     if (ast[0] == "def") {        // update current environment
         return env[ast[1]] = EVAL(ast[2], env);
-    } else if (ast[0] == "~") {  // mark as macro
-        var f = EVAL(ast[1], env);  // eval regular function
-        f.ast.push(1); // mark as macro
-        return f;
     } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env);
         for (var i in ast[1]) {
@@ -64,22 +46,6 @@ function EVAL(ast, env) {
             }
         }
         ast = ast[2]; // TCO
-    } else if (ast[0] == "`") {   // quote (unevaluated)
-        return ast[1];
-    } else if (ast[0] == ".-") {  // get or set attribute
-        var el = eval_ast_or_bind(ast.slice(1), env);
-        var x = el[0][el[1]];
-        return 2 in el ? el[0][el[1]] = el[2] : x;
-    } else if (ast[0] == ".") {   // call object method
-        var el = eval_ast_or_bind(ast.slice(1), env);
-        var x = el[0][el[1]];
-        return x.apply(el[0], el.slice(2));
-    } else if (ast[0] == "try") { // try/catch
-        try {
-            return EVAL(ast[1], env);
-        } catch (e) {
-            return EVAL(ast[2][2], eval_ast_or_bind([ast[2][1]], env, [e]));
-        }
     } else if (ast[0] == "do") {  // multiple forms (for side-effects)
         var el = eval_ast_or_bind(ast.slice(1,ast.length-1), env);
         ast = ast[ast.length-1]; // TCO
@@ -105,33 +71,22 @@ function EVAL(ast, env) {
 }
 
 E = Object.create(GLOBAL);
-E["js"]    = eval;
-E["eval"]  = function(a)   { return EVAL(a, E); }
-
-// These could all also be interop
 E["="]     = function(a,b) { return a===b; }
 E["<"]     = function(a,b) { return a<b; }
 E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
-///E["map"]   = function(a,b) { return b.map(a); }
-E["throw"] = function(a)   { throw(a); }
-
-E["read-string"] = function(a) { return JSON.parse(a); }
-E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
-E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
+E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
+E["map"]   = function(a,b) { return b.map(a); }
 
 // Node specific
 function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
-if (process.argv.length > 2) {
-    E['*ARGV*'] = process.argv.slice(3);
-    rep('["load-file", ["`", "' + process.argv[2] + '"]]');
-} else {
-    require('repl').start({
-        prompt: "user> ",
-        ignoreUndefined: true,
-        eval: function(l,c,f,cb) { console.log(rep(l.slice(0,l.length-1))); cb() }
-    });
+
+var rl = require('readline').createInterface(
+        process.stdin, process.stdout, false, false);
+function x(l) {
+    l && console.log(rep(l));
+    rl.question("user> ", x);
 }
+x()

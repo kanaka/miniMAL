@@ -1,84 +1,104 @@
-STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
-        step6_file step7_interop step8_macros step9_try stepA_miniMAL \
-        stepB_web stepB_node stepB_js1k
+#
+# Command line settings
+#
 
-.SECONDARY:
+miniMAL_IMPL = js
 
-all: miniMAL-min.js miniMAL-js1k.js miniMAL-node.js
+PYTHON = python
+
+# Extra options to pass to runtest.py
+TEST_OPTS =
+
+# Extra implementation specific options to pass to runtest.py
+mal_TEST_OPTS = --start-timeout 60 --test-timeout 120
 
 #
-# Uglify
+# Settings
 #
-UGLIFY_OPTS=-c hoist_funs=true,unsafe=true,keep_fargs=true,pure_getters=true,screw-ie8=true,unused=false -m -e
 
-REGPACK_OPTS=--crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 0
-#REGPACK_OPTS=--crushGainFactor 1 --crushLengthFactor 0 --crushCopiesFactor 0
+IMPLS = js # python
 
-node_modules/uglify-js:
-	npm install
-
-%-uglify-pretty.js: %.js node_modules/uglify-js
-	node_modules/uglify-js/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
-
-%-uglify.js: %.js node_modules/uglify-js
-	node_modules/uglify-js/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
-
-#
-# JsCrush
-#
-node_modules/jscrush:
-	npm install
-
-%-crush.js: %-uglify.js node_modules/jscrush
-	cat $< | node_modules/jscrush/bin/jscrush > $@
-
-crush^%: %-crush.js
-	@true
+step1 = step1_read_print
+step2 = step2_eval
+step3 = step3_env
+step4 = step4_if_fn_do
+step5 = step5_tco
+step6 = step6_file
+step7 = step7_interop
+step8 = step8_macros
+step9 = step9_try
+stepA = stepA_miniMAL
 
 #
-# RegPack
+# Utility functions
 #
-RegPack/node_modules/minimist:
-	cd RegPack && npm install
 
-%-regpack.js: %-uglify.js RegPack/node_modules/minimist
-	node ./RegPack/regPack.js $(REGPACK_OPTS) $< > $@
+STEP_TEST_FILES = $(strip $(wildcard $(1)/tests/$($(2)).json) $(wildcard tests/$($(2)).json))
 
-regpack^%: %-regpack.js
-	@true
+js_STEP_TO_PROG =      js/$($(1)).js
+python_STEP_TO_PROG =  python/$($(1)).py
 
-#
-# Stats
-#
-stats^%: %.js %-regpack.js
-	@wc $^ | grep -v "total"
+js_RUNSTEP =      node ../$(2) $(3)
+python_RUNSTEP =  $(PYTHON) ../$(2) $(3)
 
-stats-full^%: %.js %-uglify.js %-crush.js %-regpack.js
-	@wc $^ | grep -v "total"
+# Derived lists
+STEPS = $(sort $(filter step%,$(.VARIABLES)))
+DO_IMPLS = $(filter-out $(SKIP_IMPLS),$(IMPLS))
+IMPL_TESTS = $(foreach impl,$(DO_IMPLS),test^$(impl))
+STEP_TESTS = $(foreach step,$(STEPS),test^$(step))
+ALL_TESTS = $(filter-out $(EXCLUDE_TESTS),\
+              $(strip $(sort \
+                $(foreach impl,$(DO_IMPLS),\
+                  $(foreach step,$(STEPS),test^$(impl)^$(step))))))
 
-#
-# Web
-#
-miniMAL-min.js: stepB_web-regpack.js
-	cp $< $@
-
-miniMAL-js1k.js: stepB_js1k-regpack.js
-	cp $< $@
-
-miniMAL-js1k.b64: stepB_js1k-regpack.js
-	node -e "console.log(require('fs').readFileSync('$<').toString('base64'))" > $@
+IMPL_STATS = $(foreach impl,$(DO_IMPLS),stats^$(impl))
+IMPL_STATS_LISP = $(foreach impl,$(DO_IMPLS),stats-lisp^$(impl))
 
 #
-# Node
+# Build rules
 #
-miniMAL-node.js: stepB_node-regpack.js
-	cp $< $@
 
-.PHONY: crush regpack stats stats-full clean
-crush: $(foreach s,$(STEPS),crush^$(s))
-regpack: $(foreach s,$(STEPS),regpack^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s))
-stats-full: $(foreach s,$(STEPS),stats-full^$(s))
+# Build a program in an implementation directory
+$(foreach i,$(DO_IMPLS),$(foreach s,$(STEPS),$(call $(i)_STEP_TO_PROG,$(s)))):
+	$(MAKE) -C $(dir $(@)) $(notdir $(@))
 
-clean:
-	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64
+# Allow test, test^STEP, test^IMPL, and test^IMPL^STEP
+.SECONDEXPANSION:
+$(IMPL_TESTS): $$(filter $$@^%,$$(ALL_TESTS))
+
+.SECONDEXPANSION:
+$(STEP_TESTS): $$(foreach step,$$(subst test^,,$$@),$$(filter %^$$(step),$$(ALL_TESTS)))
+
+.SECONDEXPANSION:
+$(ALL_TESTS): $$(call $$(word 2,$$(subst ^, ,$$(@)))_STEP_TO_PROG,$$(word 3,$$(subst ^, ,$$(@))))
+	@$(foreach impl,$(word 2,$(subst ^, ,$(@))),\
+	  $(foreach step,$(word 3,$(subst ^, ,$(@))),\
+	    cd $(if $(filter mal,$(impl)),$(miniMAL_IMPL),$(impl)); \
+	    $(foreach test,$(call STEP_TEST_FILES,$(impl),$(step)),\
+	      echo '----------------------------------------------'; \
+	      echo 'Testing $@, step file: $+, test file: $(test)'; \
+	      echo 'Running: ../runtest.py $(TEST_OPTS) $(call $(impl)_TEST_OPTS) ../$(test) -- $(call $(impl)_RUNSTEP,$(step),$(+))'; \
+	      ../runtest.py $(TEST_OPTS) $(call $(impl)_TEST_OPTS) ../$(test) -- $(call $(impl)_RUNSTEP,$(step),$(+));)))
+
+test: $(ALL_TESTS)
+tests: $(ALL_TESTS)
+
+
+# Stats rules
+
+stats: $(IMPL_STATS)
+stats-lisp: $(IMPL_STATS_LISP)
+
+.SECONDEXPANSION:
+$(IMPL_STATS):
+	@echo "----------------------------------------------"; \
+	$(foreach impl,$(word 2,$(subst ^, ,$(@))),\
+	  echo "Stats for $(impl):"; \
+	  $(MAKE) --no-print-directory -C $(impl) stats)
+
+.SECONDEXPANSION:
+$(IMPL_STATS_LISP):
+	@echo "----------------------------------------------"; \
+	$(foreach impl,$(word 2,$(subst ^, ,$(@))),\
+	  echo "Stats (lisp only) for $(impl):"; \
+	  $(MAKE) --no-print-directory -C $(impl) stats-lisp)

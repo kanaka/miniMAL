@@ -1,0 +1,175 @@
+;; Load core.json
+["load-file", ["`", "core.json"]]
+
+;;
+;; Testing try/catch
+
+["try", 123, ["catch", "e", 456]]
+;=>123
+
+["try", ["abc", 1, 2], ["catch", "exc", ["prn", ["`", "exc is:"], "exc"]]]
+; "exc is:" "abc not found"
+;=>null
+
+;;;TODO: fix so long lines don't trigger ANSI escape codes ;;;[try
+;;;["try", ["throw", ["data" "foo"]] ["catch", "exc", ["do", ["prn, ["`", "exc is:"], exc], 7]]] ;;;;
+;;;; "exc is:" ["data" "foo"] ;;;;=>7
+;;;;=>7
+
+["try", ["throw", ["list", 1, 2, 3]], ["catch", "exc", ["do", ["prn", ["`", "err:"], "exc"], 7]]]
+; "err:" [1,2,3]
+;=>7
+
+["try", ["throw", ["`", "my exception"]], ["catch", "exc", ["do", ["prn", ["`", "exc:"], "exc"], 7]]]
+; "exc:" "my exception"
+;=>7
+
+;;; Test that throw is a function:
+["try", ["map", "throw", ["list", 7]], ["catch", "exc", "exc"]]
+;=>7
+
+
+;;
+;; Testing builtin functions
+
+;;;[symbol? 'abc]
+;;;;=>true
+;;;[symbol? "abc"]
+;;;;=>false
+
+["nil?", null]
+;=>true
+["nil?", true]
+;=>false
+
+["true?", true]
+;=>true
+["true?", false]
+;=>false
+["true?", "true?"]
+;=>false
+
+["false?", false]
+;=>true
+["false?", true]
+;=>false
+
+;; Testing apply function with core functions
+["apply", "+", ["list", 2, 3]]
+;=>5
+["apply", "+", 4, ["list", 5]]
+;=>9
+["apply", "prn", ["list", 1, 2, ["`", "3"], ["list"]]]
+; 1 2 "3" []
+["apply", "prn", 1, 2, ["list", ["`", "3"], ["list"]]]
+; 1 2 "3" []
+
+;; Testing apply function with user functions
+["apply", ["fn", ["a", "b"], ["+", "a", "b"]], ["list", 2, 3]]
+;=>5
+["apply", ["fn", ["a", "b"], ["+", "a", "b"]], 4, ["list", 5]]
+;=>9
+
+;; Testing map function
+["def", "nums", ["list", 1, 2, 3]]
+["def", "double", ["fn", ["a"], ["*", 2, "a"]]]
+["double", 3]
+;=>6
+["map", "double", "nums"] 
+;=>[2,4,6]
+["map", ["fn", ["x"], ["string?", "x"]], ["list", 1, ["`", "two"], ["list", 3]]]
+;=>[false,true,false]
+
+;; Hash map functions
+;;;["map?", {}]
+;;;;=>true
+;;;["map?", ["`", []]]
+;;;;=>false
+;;;["map?", ["`", "abc"]]
+;;;;=>false
+;;;
+;;;;;
+;;;;; Testing hash-maps
+;;;["hash-map", ["`", "a"], 1]
+;;;;=>{"a":1}
+;;;
+;;;{"a": 1}
+;;;;=>{"a":1}
+;;;
+;;;["set", {}, ["`", "a"], 1]
+;;;;=>{"a":1}
+;;;
+;;;["get", ["set", ["set", {"a": 1}, ["`", "b"], 2], ["`", "c"], 3], ["`", "a"]]
+;;;;=>1
+;;;
+;;;[def! hm1 [hash-map]]
+;;;;=>{}
+;;;
+;;;[map? hm1]
+;;;;=>true
+;;;[map? 1]
+;;;;=>false
+;;;[map? "abc"]
+;;;;=>false
+;;;
+;;;[get nil "a"]
+;;;;=>nil
+;;;
+;;;[get hm1 "a"]
+;;;;=>nil
+;;;
+;;;[contains? hm1 "a"]
+;;;;=>false
+;;;
+;;;[def! hm2 [assoc hm1 "a" 1]]
+;;;;=>{"a" 1}
+;;;
+;;;[get hm1 "a"]
+;;;;=>nil
+;;;
+;;;[contains? hm1 "a"]
+;;;;=>false
+;;;
+;;;[get hm2 "a"]
+;;;;=>1
+;;;
+;;;[contains? hm2 "a"]
+;;;;=>true
+;;;
+;;;
+;;;;;; TODO: fix. Clojure returns nil but this breaks mal impl
+;;;[keys hm1]
+;;;;=>[]
+;;;
+;;;[keys hm2]
+;;;;=>["a"]
+;;;
+;;;;;; TODO: fix. Clojure returns nil but this breaks mal impl
+;;;[vals hm1]
+;;;;=>[]
+;;;
+;;;[vals hm2]
+;;;;=>[1]
+;;;
+;;;[count [keys [assoc hm2 "b" 2 "c" 3]]]
+;;;;=>3
+;;;
+;;;[def! hm3 [assoc hm2 "b" 2]]
+;;;[count [keys hm3]]
+;;;;=>2
+;;;[count [vals hm3]]
+;;;;=>2
+;;;
+;;;[dissoc hm3 "a"]
+;;;;=>{"b" 2}
+;;;
+;;;[dissoc hm3 "a" "b"]
+;;;;=>{}
+;;;
+;;;[dissoc hm3 "a" "b" "c"]
+;;;;=>{}
+;;;
+;;;[count [keys hm3]]
+;;;;=>2
+;;;
+;;;

@@ -14,14 +14,16 @@ env["load-file"] = function(a) {
 };
 
 // Node specific
+GLOBAL['*ARGV*'] = process.argv.slice(3);
 if (process.argv.length > 2) {
-    GLOBAL['*ARGV*'] = process.argv.slice(3);
     m.rep('["load-file", ["`", "' + process.argv[2] + '"]]');
 } else {
-    require('repl').start({
-        prompt: "user> ",
-        ignoreUndefined: true,
-        eval: function(l,c,f,cb) { console.log(m.rep(l.slice(0,l.length-1))); cb() }
-    });
+    var rl = require('readline').createInterface(
+            process.stdin, process.stdout, false, false);
+    function x(l) {
+        l && console.log(m.rep(l));
+        rl.question("user> ", x);
+    }
+    x()
 }
 

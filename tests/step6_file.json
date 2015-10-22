@@ -1,0 +1,45 @@
+;;; TODO: really a step5 test
+;;
+;; Testing that [do [do]] not broken by TCO
+["do", ["do", 1, 2]]
+;=>2
+
+;;
+;; Testing read-string, eval and slurp
+["read-string", ["`", "[1, 2, [3, 4], null]"]]
+;=>[1,2,[3,4],null]
+
+["read-string", ["`", "[\"+\", 2, 3]"]]
+;=>["+",2,3]
+
+;;;[read-string "7 ;; comment"]
+;;;;=>7
+;;;
+;;;;;; Differing output, but make sure no fatal error
+;;;[read-string ";; comment"]
+
+
+["eval", ["read-string", ["`", "[\"+\", 2, 3]"]]]
+;=>5
+
+;;; TODO: fix newline matching so that this works
+;;;[slurp "../tests/test.txt"]
+;;;;=>"A line of text\n"
+
+
+;; Testing load-file
+
+["load-file", ["`", "../tests/inc.json"]]
+["inc1", 7]
+;=>8
+["inc2", 7]
+;=>9
+["inc3", 9]
+;=>12
+
+;;;;;
+;;;;; Testing that *ARGV* exists and is an empty list
+;;;[list? *ARGV*]
+;;;;=>true
+"*ARGV*"
+;=>[]

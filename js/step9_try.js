@@ -115,13 +115,9 @@ E["+"]     = function(a,b) { return a+b; }
 E["-"]     = function(a,b) { return a-b; }
 E["*"]     = function(a,b) { return a*b; }
 E["/"]     = function(a,b) { return a/b; }
-E["isa"]   = function(a,b) { return a instanceof b; }
-E["type"]  = function(a)   { return typeof a; }
-E["new"]   = function(a)   { return new (a.bind.apply(a, arguments)); }
-E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
-E["map"]   = function(a,b) { return b.map(a); }
+///E["list"]  = function(a,b) { return Array.prototype.slice.call(arguments); }
+///E["map"]   = function(a,b) { return b.map(a); }
 E["throw"] = function(a)   { throw(a); }
-E["del"]   = function(a,b) { return delete a[b]; }
 
 E["read-string"] = function(a) { return JSON.parse(a); }
 E["slurp"] = function(a)   { return require('fs').readFileSync(a,'utf-8'); }
@@ -129,13 +125,15 @@ E["load-file"] = function(a) { return EVAL(JSON.parse(E["slurp"](a)),E);  }
 
 // Node specific
 function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),E)); }
+E['*ARGV*'] = process.argv.slice(3);
 if (process.argv.length > 2) {
-    E['*ARGV*'] = process.argv.slice(3);
     rep('["load-file", ["`", "' + process.argv[2] + '"]]');
 } else {
-    require('repl').start({
-        prompt: "user> ",
-        ignoreUndefined: true,
-        eval: function(l,c,f,cb) { console.log(rep(l.slice(0,l.length-1))); cb() }
-    });
+    var rl = require('readline').createInterface(
+            process.stdin, process.stdout, false, false);
+    function x(l) {
+        l && console.log(rep(l));
+        rl.question("user> ", x);
+    }
+    x()
 }

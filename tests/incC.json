@@ -1,0 +1,8 @@
+["do",
+
+["def", "mymap", {"a": 1}],
+
+["prn", ["`", "incC.json finished"]],
+["`", "incC.json return string"]
+]
+

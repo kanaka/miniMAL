@@ -9,8 +9,11 @@ function EVAL(ast, env) {
 
 // Node specific
 function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),"")); }
-require('repl').start({
-    prompt: "user> ",
-    ignoreUndefined: true,
-    eval: function(l,c,f,cb) { console.log(rep(l.slice(0,l.length-1))); cb() }
-});
+
+var rl = require('readline').createInterface(
+        process.stdin, process.stdout, false, false);
+function x(l) {
+    l && console.log(rep(l));
+    rl.question("user> ", x);
+}
+x()
