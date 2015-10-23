@@ -1,0 +1,12 @@
+["do",
+
+["load-file", ["`", "core.json"]],
+
+["def", "repl", ["fn",["prompt", "rep"],
+  ["let", ["line", ["readline", "prompt"]],
+    ["do",
+      ["println", ["rep", "line"]],
+      ["repl", "prompt", "rep"]]]]],
+
+null
+]

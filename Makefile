@@ -16,7 +16,7 @@ mal_TEST_OPTS = --start-timeout 60 --test-timeout 120
 # Settings
 #
 
-IMPLS = js # python
+IMPLS = js python
 
 step1 = step1_read_print
 step2 = step2_eval

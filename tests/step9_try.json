@@ -80,7 +80,7 @@
 ["map", ["fn", ["x"], ["string?", "x"]], ["list", 1, ["`", "two"], ["list", 3]]]
 ;=>[false,true,false]
 
-;; Hash map functions
+;;;;; Hash map functions
 ;;;["map?", {}]
 ;;;;=>true
 ;;;["map?", ["`", []]]
