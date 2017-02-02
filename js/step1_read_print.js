@@ -1,19 +1,16 @@
 // miniMAL
-// Copyright (C) 2014 Joel Martin
+// Copyright (C) 2016 Joel Martin
 // Licensed under MPL 2.0
 
 function EVAL(ast, env) {
-    return ast;
+    return ast
 }
 
 
 // Node specific
-function rep(a) { return JSON.stringify(EVAL(JSON.parse(a),"")); }
+var rep = (...a) => JSON.stringify(EVAL(JSON.parse(a[0]),{}))
 
 var rl = require('readline').createInterface(
-        process.stdin, process.stdout, false, false);
-function x(l) {
-    l && console.log(rep(l));
-    rl.question("user> ", x);
-}
+        process.stdin, process.stdout, false, false)
+var x = (...a) => a[0] && console.log(rep(a[0])) || rl.question("user> ", x)
 x()

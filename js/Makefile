@@ -18,10 +18,10 @@ node_modules/uglify-js:
 	npm install
 
 %-uglify-pretty.js: %.js node_modules/uglify-js
-	node_modules/uglify-js/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
+	UglifyJS2/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
 
 %-uglify.js: %.js node_modules/uglify-js
-	node_modules/uglify-js/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
+	UglifyJS2/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
 
 #
 # JsCrush

@@ -1,3 +1,7 @@
 [submodule "RegPack"]
 	path = js/RegPack
 	url = https://github.com/kanaka/RegPack
+[submodule "js/UglifyJS2"]
+	path = js/UglifyJS2
+	url = https://github.com/mishoo/UglifyJS2
+	branch = harmony

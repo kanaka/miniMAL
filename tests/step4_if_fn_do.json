@@ -155,20 +155,9 @@
 ;=>15
 
 
-;;;;; Testing variable length arguments
-;;;
-;;;[ [fn* [& more] ["count", more]] 1 2 3]
-;;;;=>3
-;;;[ [fn* [& more] ["count", more]] 1]
-;;;;=>1
-;;;[ [fn* [& more] ["count", more]] ]
-;;;;=>0
-;;;[ [fn* [a & more] ["count", more]] 1 2 3]
-;;;;=>2
-;;;[ [fn* [a & more] ["count", more]] 1]
-;;;;=>0
-;;;
-;;;
+;;; See step7_interop for variable length arguments
+
+
 ;;;;; Testing language defined not function
 ;;;[not false]
 ;;;;=>true

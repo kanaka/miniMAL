@@ -3,6 +3,19 @@
 ;; Load core.json
 ["load-file", ["`", "core.json"]]
 
+;; Testing variable length arguments
+[ ["fn", ["&", "more"], ["count", "more"]], 1, 2, 3]
+;=>3
+[ ["fn", ["&", "more"], ["count", "more"]], 1]
+;=>1
+[ ["fn", ["&", "more"], ["count", "more"]] ]
+;=>0
+[ ["fn", ["a", "&", "more"], ["count", "more"]], 1, 2, 3]
+;=>2
+[ ["fn", ["a", "&", "more"], ["count", "more"]], 1]
+;=>0
+
+
 ;; Testing comments in a file
 ["load-file", ["`", "../tests/incB.json"]]
 ; "incB.json finished"
