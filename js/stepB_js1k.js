@@ -3,7 +3,7 @@
 // Licensed under MPL 2.0
 
 // 2 args: eval_ast, 3 args: env_bind
-let eval_ast_or_bind = function(ast, env, exprs) {
+var eval_ast_or_bind = function(ast, env, exprs) {
     if (exprs) {
         // Return new Env with symbols in ast bound to
         // corresponding values in exprs
