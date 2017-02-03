@@ -206,7 +206,7 @@ def assert_prompt(runner, prompts, timeout):
 
 
 # Wait for the initial prompt
-assert_prompt(r, ['user> ', 'mal-user> '], args.start_timeout)
+assert_prompt(r, ['> ', 'mal> '], args.start_timeout)
 
 # Send the pre-eval code if any
 if args.pre_eval:
@@ -229,8 +229,8 @@ while t.next():
 
     r.writeline(t.form)
     try:
-        res = r.read_to_prompt(['\r\nuser> ', '\nuser> ',
-                                '\r\nmal-user> ', '\nmal-user> '],
+        res = r.read_to_prompt(['\r\n> ', '\n> ',
+                                '\r\nmal> ', '\nmal> '],
                                 timeout=args.test_timeout)
         #print "%s,%s,%s" % (idx, repr(p.before), repr(p.after))
         if t.ret == "*" or res in expected:

@@ -1,5 +1,5 @@
 ;; Load core.json
-["load-file", ["`", "core.json"]]
+["load", ["`", "core.json"]]
 
 ;;
 ;; Testing new

@@ -36,9 +36,9 @@ class Env(object):
 def READ(s): return loads(s)
 
 def eval_ast(ast, env):
-    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == str: return env.get(ast)
-    else:                  return ast
+    if type(ast) == list:        return list(map(lambda e: EVAL(e, env), ast))
+    elif type(ast) == type(u''): return env.get(ast)
+    else:                        return ast
 
 def EVAL(ast, env):
     #print("EVAL ast: %s" % ast)
@@ -87,7 +87,7 @@ repl_env.set('map', lambda a,b: list(map(a,b)))
 
 while True:
     try:
-        line = rl("user> ")
+        line = rl("> ")
         if not line: continue
     except EOFError:
         break

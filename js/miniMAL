@@ -1,29 +1,19 @@
 #!/usr/bin/env node
 
-var miniMAL = require('./miniMAL-node.js'),
-    env = GLOBAL,
-    m = miniMAL(env);
+var m = require('./miniMAL-node.js')(global);
 
-env["require"] = require;
-env["read-string"] = function(a) { return JSON.parse(a); };
-env["slurp"] = function(a) { return require('fs').readFileSync(a,'utf-8'); };
-env["load-file"] = function(a) {
-    // Enable shebang usage (ignore shebang line)
-    var json = env["slurp"](a).replace(/^#![^\n]*\n/, "", "");
-    return m.eval(JSON.parse(json));
-};
+Object.assign(m, {
+    "require": require,
+    // Override to enable shebang usage (ignore shebang line)
+    "load":    a => m.eval(JSON.parse(m.slurp(a).replace(/^#![^\n]*\n/, ""))),
+    "ARGS":    process.argv.slice(3)
+})
 
 // Node specific
-GLOBAL['*ARGV*'] = process.argv.slice(3);
-if (process.argv.length > 2) {
-    m.rep('["load-file", ["`", "' + process.argv[2] + '"]]');
+if (process.argv[2]) {
+    m.load(process.argv[2])
 } else {
-    var rl = require('readline').createInterface(
-            process.stdin, process.stdout, false, false);
-    function x(l) {
-        l && console.log(m.rep(l));
-        rl.question("user> ", x);
-    }
-    x()
+    require("repl").start({
+        eval: (...a) => console.log(m.rep(a[0])) | a[3](),
+        terminal: false})
 }
-

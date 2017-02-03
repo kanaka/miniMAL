@@ -17,7 +17,7 @@ def rep(line):
 
 while True:
     try:
-        line = rl("user> ")
+        line = rl("> ")
         if not line: continue
     except EOFError:
         break

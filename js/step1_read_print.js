@@ -8,9 +8,7 @@ function EVAL(ast, env) {
 
 
 // Node specific
-var rep = (...a) => JSON.stringify(EVAL(JSON.parse(a[0]),{}))
-
-var rl = require('readline').createInterface(
-        process.stdin, process.stdout, false, false)
-var x = (...a) => a[0] && console.log(rep(a[0])) || rl.question("user> ", x)
-x()
+require("repl").start({
+    eval:     (...a) => a[3](!1,JSON.stringify(EVAL(JSON.parse(a[0]),{}))),
+    writer:   (...a) => a[0],
+    terminal: false})

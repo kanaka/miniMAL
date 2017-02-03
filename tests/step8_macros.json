@@ -1,5 +1,5 @@
 ;; Load core.json
-["load-file", ["`", "core.json"]]
+["load", ["`", "core.json"]]
 
 ;; Testing non-macro function
 ["not", ["=", 1, 1]]
@@ -97,7 +97,7 @@
 
 ;;;;;
 ;;;;; Loading core.mal
-;;;["load-file", "../core.mal"]
+;;;["load", "../core.mal"]
 
 ;; Testing and macro
 ["and"]

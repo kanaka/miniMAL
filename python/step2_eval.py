@@ -9,9 +9,9 @@ if sys.version_info[0] >= 3: rl = input
 else:                        rl = raw_input
 
 def eval_ast(ast, env):
-    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == str: return env[ast]
-    else:                  return ast
+    if type(ast) == list:        return list(map(lambda e: EVAL(e, env), ast))
+    elif type(ast) == type(u''): return env[ast]
+    else:                        return ast
 
 def EVAL(ast, env):
     if type(ast) != list: return eval_ast(ast, env)
@@ -31,7 +31,7 @@ def rep(line):
 
 while True:
     try:
-        line = rl("user> ")
+        line = rl("> ")
         if not line: continue
     except EOFError:
         break

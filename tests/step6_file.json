@@ -5,21 +5,21 @@
 ;=>2
 
 ;;
-;; Testing read-string, eval and slurp
-["read-string", ["`", "[1, 2, [3, 4], null]"]]
+;; Testing read, eval and slurp
+["read", ["`", "[1, 2, [3, 4], null]"]]
 ;=>[1,2,[3,4],null]
 
-["read-string", ["`", "[\"+\", 2, 3]"]]
+["read", ["`", "[\"+\", 2, 3]"]]
 ;=>["+",2,3]
 
-;;;[read-string "7 ;; comment"]
+;;;[read "7 ;; comment"]
 ;;;;=>7
 ;;;
 ;;;;;; Differing output, but make sure no fatal error
-;;;[read-string ";; comment"]
+;;;[read ";; comment"]
 
 
-["eval", ["read-string", ["`", "[\"+\", 2, 3]"]]]
+["eval", ["read", ["`", "[\"+\", 2, 3]"]]]
 ;=>5
 
 ;;; TODO: fix newline matching so that this works
@@ -27,9 +27,9 @@
 ;;;;=>"A line of text\n"
 
 
-;; Testing load-file
+;; Testing load
 
-["load-file", ["`", "../tests/inc.json"]]
+["load", ["`", "../tests/inc.json"]]
 ["inc1", 7]
 ;=>8
 ["inc2", 7]
@@ -38,8 +38,8 @@
 ;=>12
 
 ;;;;;
-;;;;; Testing that *ARGV* exists and is an empty list
-;;;[list? *ARGV*]
+;;;;; Testing that ARGS exists and is an empty list
+;;;[list? ARGS]
 ;;;;=>true
-"*ARGV*"
+"ARGS"
 ;=>[]

@@ -38,16 +38,16 @@ def READ(s): return loads(s)
 
 def macroexpand(ast, env):
     while (type(ast) == list
-           and type(ast[0]) == str
+           and type(ast[0]) == type(u'')
            and env.find(ast[0]) != None
            and getattr(env.get(ast[0]), 'ismacro', None)):
         ast = env.get(ast[0])(*ast[1:])
     return ast
 
 def eval_ast(ast, env):
-    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == str: return env.get(ast)
-    else:                  return ast
+    if type(ast) == list:        return list(map(lambda e: EVAL(e, env), ast))
+    elif type(ast) == type(u''): return env.get(ast)
+    else:                        return ast
 
 def EVAL(ast, env):
   while True:
@@ -144,23 +144,23 @@ def py_throw(a): raise Exception(a)
 repl_env.set('throw', lambda a: py_throw(a))
 
 repl_env.set('readline', rl)
-repl_env.set('read-string', READ)
+repl_env.set('read', READ)
 repl_env.set('pr-str*', PRINT)
 repl_env.set('slurp', lambda a: open(a).read())
-repl_env.set('load-file', lambda a: EVAL(READ(open(a).read()),repl_env))
+repl_env.set('load', lambda a: EVAL(READ(open(a).read()),repl_env))
 repl_env.set('typeof', lambda a: type(a).__name__)
 
-repl_env.set('*ARGV*', sys.argv[2:])
+repl_env.set('ARGS', sys.argv[2:])
 if len(sys.argv) >= 2:
     try:
-        rep('["load-file", ["`", "' + sys.argv[1] + '"]]')
+        rep('["load", ["`", "' + sys.argv[1] + '"]]')
     except EOFError:
         pass
     sys.exit(0)
 
 while True:
     try:
-        line = rl("user> ")
+        line = rl("> ")
         if not line: continue
     except EOFError:
         break
