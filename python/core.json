@@ -8,7 +8,7 @@
 ["def", "string?", ["fn", ["a"],
   ["if", ["=", "a", null],
     false,
-    ["=", ["typeof", "a"], ["typeof", ["`", ""]]]]]],
+    ["=", ["typeof", "a"], ["`",  "str"]]]]],
 
 ["def", "pr-list*", ["fn", ["a", "pr", "sep"],
   ["let", ["lst", ["map", ["fn", ["x"],

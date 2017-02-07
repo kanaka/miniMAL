@@ -1,25 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys, traceback, readline
-
-try:    import simplejson as json
-except: import json
-
-if sys.version_info[0] >= 3: rl = input
-else:                        rl = raw_input
+from json import loads, dumps
 
 def eval_ast(ast, env):
-    if type(ast) == list:        return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == type(u''): return env[ast]
-    else:                        return ast
+    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
+    elif type(ast) == str: return env[ast]
+    else:                  return ast
 
 def EVAL(ast, env):
     if type(ast) != list: return eval_ast(ast, env)
 
     # apply
     el = eval_ast(ast, env)
-    f = el[0]
-    return f(*el[1:])
+    fn = el[0]
+    return fn(*el[1:])
 
 repl_env = {'+': lambda a,b: a+b,
             '-': lambda a,b: a-b,
@@ -27,17 +22,18 @@ repl_env = {'+': lambda a,b: a+b,
             '/': lambda a,b: int(a/b)}
 
 def rep(line):
-    return json.dumps(EVAL(json.loads(line), repl_env), separators=(',', ':'))
+    return dumps(EVAL(loads(line), repl_env), separators=(',', ':'))
 
-while True:
-    try:
-        line = rl("> ")
-        if not line: continue
-    except EOFError:
-        break
-    try:
-        print("%s" % rep(line))
-    except ValueError as e:
-        print("%s" % e.args[0])
-    except Exception:
-        print("".join(traceback.format_exception(*sys.exc_info())))
+if __name__ == "__main__":
+    while True:
+        try:
+            line = input("> ")
+            if not line: continue
+        except EOFError:
+            break
+        try:
+            print("%s" % rep(line))
+        except ValueError as e:
+            print("%s" % e.args[0])
+        except Exception:
+            print("".join(traceback.format_exception(*sys.exc_info())))

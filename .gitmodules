@@ -5,3 +5,6 @@
 	path = js/UglifyJS2
 	url = https://github.com/mishoo/UglifyJS2
 	branch = harmony
+[submodule "python/minipy"]
+	path = python/minipy
+	url = https://github.com/kanaka/minipy

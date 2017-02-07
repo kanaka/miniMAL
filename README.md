@@ -2,7 +2,7 @@
 
 A Clojure inspired Lisp implemented in less than 1024 bytes of
 JavaScript. There is also an implementation of miniMAL in python
-that is about 1.7K as a pyz file (gzip'd).
+that is about 1.4K as a pyz file (gzip'd).
 
 ### Rationale
 

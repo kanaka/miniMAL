@@ -4,7 +4,7 @@
 
 miniMAL_IMPL = js
 
-PYTHON = python
+PYTHON = python3
 
 # Extra options to pass to runtest.py
 TEST_OPTS =
