@@ -1,5 +1,5 @@
 // miniMAL
-// Copyright (C) 2016 Joel Martin
+// Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
 // 2 args: eval_ast, 3 args: env_bind

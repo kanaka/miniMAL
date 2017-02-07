@@ -1,5 +1,5 @@
 // miniMAL
-// Copyright (C) 2016 Joel Martin
+// Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
 function EVAL(ast, env) {

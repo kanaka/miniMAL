@@ -7,4 +7,4 @@ RegPack/.git
 RegPack/node_modules
 old
 notes
-
+*.pyc

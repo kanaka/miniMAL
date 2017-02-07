@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# miniMAL
+# Copyright (C) 2017 Joel Martin
+# Licensed under MPL 2.0
 
 import sys, traceback, readline
 from json import loads, dumps
