@@ -1,83 +1,318 @@
+<!--
+Copyright (c) 2014 Joel Martin
+Copyright (c) 2012 Fogus, Jen Myers and Relevance Inc.
+All rights reserved. The use and distribution terms for this software
+are covered by the Eclipse Public License 1.0
+(http://opensource.org/licenses/eclipse-1.0.php) which can be found in
+the file COPYING the root of this distribution.  By using this
+software in any fashion, you are agreeing to be bound by the terms of
+this license.  You must not remove this notice, or any other, from
+this software.
+-->
+
 <html>
-<style>
-button {
-    width: 200px;
-    font-size: 20px;
-}
-textarea {
-    font: 12px monospace;
-}
-</style>
+<head>
+  <link rel="stylesheet" type="text/css" href="js/web/base.css" />
+  <link rel="stylesheet" type="text/css" href="js/web/layout.css" />
+  <link rel="stylesheet" type="text/css" href="js/web/skeleton.css" />
+  <link rel="stylesheet" type="text/css" href="js/web/himera.css" />
+  <link rel="stylesheet" type="text/css" href="js/web/ansi.css" />
+  <link rel="stylesheet" type="text/css" href="js/web/console.css" />
+  <style type="text/css" media="screen">
+  </style>
+  <title>miniMAL Web REPL</title>
+</head>
 <body>
-    <a href="https://github.com/kanaka/miniMAL"><button id=bar><b>miniMAL</b></button></a>
-    <br><br>
-    <div>
-        A Lisp implemented in <a href="miniMAL-min.js">&lt; 1 KB of JavaScript</a> with macros, TCO, interop and exception handling.
+  <div class="container">
+    <h1 id="title"><a href="https://github.com/kanaka/miniMAL"/>miniMAL</a></h1>
+    
+    <h2>miniMAL Web REPL</h2>
+
+    <div id="console-container" class="sixteen columns">
+    <div class="console" id="console"></div>
     </div>
-    <br>
-    <div>
-        <b>"REPL":</b>
+    <div class="eight columns">
+    <!--
+    <h3><span style="cursor: pointer" class="doc-link" id="toggle-editor">Show file editor</span></h3>
+    -->
+    <h3><span style="cursor: pointer" class="doc-link">&nbsp;</span></h3>
     </div>
-    <textarea rows=40 cols=80 wrap="off"></textarea>
-    <textarea rows=40 cols=40 wrap="off"></textarea>
+    <div class="eight columns">
+    <div class="source">
+      <a href="http://github.com/kanaka/miniMAL">View source on Github <img src="js/web/github-icon.png" /></a></p>
+    </div><!-- /source -->
+    </div>
+    
+    <div class="rule sixteen columns"></div>
+
+	  <div class="sixteen columns">
+    <h3>miniMAL at a glance</h3>
+    </div>
+    
+    <div class="cheat-box-container eight columns">
+      <div class="cheat-box">
+        <h4>Lisp-0 / JSON Source</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Scalars</td>
+            <td>123, nil, true, false, "symbol", "+"</td>
+          </tr>
+          <tr>
+            <td class="row-label">Strings</td>
+            <td>["`", "quoted symbol is a string"]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">List</td>
+            <td>[7, 8, 9]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Objects</td>
+            <td>{"a": 123, "b": 789}</td>
+          </tr>
+        </table>
+      </div><!-- /cheat-box -->
+      <div class="cheat-box">
+        <h4>Functions</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Calling</td>
+            <td>["+", 2, 3]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Anonymous</td>
+            <td>["fn", ["a"], ["+", 2, "a"]]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">Named</td>
+            <td>["def", "inc2",<br>
+                &nbsp;&nbsp;["fn", ["a"], ["+", 2, "a"]]]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Higher Order</td>
+            <td>["map", "inc2",<br>
+                &nbsp;&nbsp;["list", 2,3,4]]</td>
+          </tr>
+        </table>
+      </div><!-- /cheat-box -->
+      <div class="cheat-box">
+        <h4>JavaScript Interop</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Evaluate JavaScript</td>
+            <td>["js", ["`", "2 + 3"]]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Method call/access</td>
+            <td>[".", "Object",<br>
+                &nbsp;&nbsp;["`", "keys"], {"a": 1}]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">Data Type</td>
+            <td>["classOf", 123]</td>
+          </tr>
+	</table>
+      </div><!-- /cheat-box -->
+      <div class="cheat-box">
+        <h4>Metaprogramming</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Macros</td>
+            <td>["def","unless",["~",["fn",["p","a","b"],<br>
+                &nbsp;&nbsp;["list",["`","if"],"p","b","a"]]]]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Eval</td>
+            <td>["eval",["`", ["+", 2,3]]]</td>
+          </tr>
+        </table>
+      </div><!-- /cheat-box -->
+    </div><!-- /cheat-box-container -->
+
+    <div class="cheat-box-container eight columns">
+      <div class="cheat-box">
+        <h4>Special Forms</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Conditional</td>
+            <td>["if", ["&gt;", 3, 2], 7, 8]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Multiple Actions<br>(side-effects)</td>
+            <td>["do", ["prn", 123], 456]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">Environment Bindings</td>
+            <td>["def", "x", 123]<br>
+                ["let", ["y", 456],<br>
+                &nbsp;&nbsp;["*", 2, "y"]]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Quote</td>
+            <td>["`", ["prn", 123]]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">Error Handling</td>
+            <td>["try", "abc",<br>
+                &nbsp;&nbsp;["catch", "e",<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;["prn", "e"]]]</td>
+          </tr>
+	</table>
+      </div><!-- /cheat-box -->
+      <div class="cheat-box">
+        <h4>Core Library</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Math</td>
+            <td>"+", "-", "*", "/"</td>
+          </tr>
+          <tr>
+            <td class="row-label">Conditional Macros</td>
+            <td>"and", "or", "cond"</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">Comparison/Boolean</td>
+            <td>"=", "&lt;", "&gt;", "&lt;=", "&gt;=", "not"</td>
+          </tr>
+          <tr>
+            <td class="row-label">Predicates</td>
+            <td>"nil?", "true?", "false?", "string?", "list?",
+                "contains?", "empty?"</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">List Functions</td>
+            <td>"apply", "list", "cons", "concat", "nth", "first",
+                "last", "rest", "count", "empty?"</td>
+          </tr>
+          <tr>
+            <td class="row-label">Object Functions</td>
+            <td>"get", "set", "contains?", "keys", "vals"</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">String Functions</td>
+            <td>"str", "pr-str", "prn", "println"</td>
+          </tr>
+        </table>
+      </div><!-- /cheat-box -->
+    </div><!-- /cheat-box-container -->
+        
+    <div class="rule sixteen columns"></div>
+    
+    <div class="column footer-logo">
+        <div>miniMAL &copy; 2017 Joel Martin</div>
+        <div>Himera design &copy; 2012-2013 <a ref="http://www.fogus.me">Fogus</a>, <a href="http://jenmyers.net/">Jen Myers</a> and <a href="http://www.thinkrelevance.com">Relevance Inc.</a></div>
+    </div>
+    
+  </div><!-- / container -->
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript" src="js/web/jqconsole.min.js"></script>
+  <script type="text/javascript" src="js/web/miniMAL-min.js"></script>
+  <script type="text/javascript" src="js/web/miniMAL-core.js"></script>
+  <script>
+    $(function() {
+      //
+      // Setup jqconsole
+      //
+      window.jqconsole = $('#console').jqconsole(null, '> ')
+      var max_history_length = 1000
+
+      function jq_load_history(jq) {
+          if (localStorage['miniMAL_history']) {
+              var lines = JSON.parse(localStorage['miniMAL_history'])
+              if (lines.length > max_history_length) {
+                  lines = lines.slice(lines.length-max_history_length)
+              }
+              jq.SetHistory(lines)
+          }
+      }
+
+      function jq_save_history(jq) {
+          var lines = jq.GetHistory()
+          localStorage['miniMAL_history'] = JSON.stringify(lines)
+      }
+
+
+      jq_load_history(jqconsole)
+
+      // Abort prompt on Ctrl+C.
+      jqconsole.RegisterShortcut('C', function() {
+        jqconsole.AbortPrompt()
+        handler()
+      })
+      // Move to line start Ctrl+A.
+      jqconsole.RegisterShortcut('A', function() {
+        jqconsole.MoveToStart()
+        handler()
+      })
+      // Move to line end Ctrl+E.
+      jqconsole.RegisterShortcut('E', function() {
+        jqconsole.MoveToEnd()
+        handler()
+      })
+      jqconsole.RegisterMatching('{', '}', 'brace')
+      jqconsole.RegisterMatching('[', ']', 'bracket')
+      jqconsole.RegisterMatching('"', '"', 'dquote')
+
+      //
+      // Setup miniMAL
+      //
+      var m = miniMAL(window)
+
+      // Load in the core library
+      m.eval(core_ns)
+      //m.eval(["load", ["`", "js/core.json"]])
+
+
+      // Add file loading and printing functions to the core library
+      var slurp = function(f) {
+        var req = new XMLHttpRequest()
+        req.open("GET", f, false)
+        req.send()
+        if (req.status == 200) {
+          return req.responseText
+        } else {
+          throw new Error("Failed to slurp file: " + f)
+        }
+      }
+
+      jqprintln = function (...a) {
+        jqconsole.Write(a.join(" ") + "\n", 'jqconsole-output')
+        return null
+      }
+
+      Object.assign(m, {
+        "slurp":   slurp,
+        "load":    f => m.eval(JSON.parse(m.slurp(f))),
+        "prn":     (...s) => jqprintln(s.map(JSON.stringify).join(" ")),
+        "println": (...s) => jqprintln(s.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(" ")),
+      })
+
+      // Print out the banner
+      //m.eval(["println", ["`", "miniMAL 0.0.7"]])
+
+
+      //
+      // Main REPL handler/callback
+      //
+      var handler = function(line) {
+        if (line) {
+          try {
+            jqconsole.Write(m.rep(line) + '\n', 'jqconsole-return')
+          } catch (exc) {
+            if (exc.stack) {
+              jqconsole.Write(exc.stack + '\n', 'jqconsole-error')
+            } else {
+              jqconsole.Write(exc + '\n', 'jqconsole-error')
+            }
+          }
+          jq_save_history(jqconsole)
+        }
+        jqconsole.Prompt(true, handler)
+      }
+
+      // Initiate the first prompt.
+      handler()
+    })
+  </script>
+
 </body>
-<script src="js/miniMAL-min.js"></script>
-<!--<script src="stepB_web.js"></script>-->
-<script>
-    var m = miniMAL(window);
-
-    var repl = function(){
-        t[1].value = t[0].value.split('\n').map(function(a) {
-            return a ? m.rep(a) : '';
-        }).join('\n');
-    };
-
-    var example_code = [
-        '["`", "--- Basics ---"]',
-        '["+",2,3]',
-        '["def","a",7]',
-        '["let",["b",2,"c","a"],["*","b","c"]]',
-        '["if",["=",5,5],7,8]',
-        '["def","sqr",["fn",["a"],["*","a","a"]]]',
-        '["sqr",7]',
-        '["def","list",["fn",["&","a"],"a"]]',
-        '["list", 1, true, false, null]',
-        '[".-", {"foo": "bar"}, ["`", "foo"]]',
-        '["eval",["`",["+",2,["sqr",3]]]]',
-        '',
-        '["`", "--- Functional Programming ---"]',
-        '["def","apply",["fn",["a","b"],[".","a",["`","apply"],"a","b"]]]',
-        '["apply","+",["`",[4,5]]]',
-        '["def", "map", ["fn", ["a", "b"], [".", "b", ["`", "map"], "a"]]]',
-        '["def","fac",["fn",["n"],["if","n",["*","n",["fac",["-","n",1]]],1]]]',
-        '["map","fac",["`",[7,8,9]]]',
-        '',
-        '["`", "--- JS Interop ---"]',
-        '["def","randInt",["fn",["max"],["parseInt",["*","max",[".", "Math", ["`", "random"]]]]]]',
-        '["def","rand-hsl",["fn",[],["+",["+",["`","hsl("],["randInt",360]],["`",",50%,70%)"]]]]',
-        '["def","set-style",["fn",["o","k","v"],[".-",[".-","o",["`","style"]],"k","v"]]]',
-        '["set-style","bar",["`","backgroundColor"],["rand-hsl"]]',
-        '',
-        '["`", "--- TCO ---"]',
-        '["def","sum",["fn",["n","a"],["if",["=","n",0],"a",["sum",["-","n",1],["+","n","a"]]]]]',
-        '["sum",10,0]',
-        '["sum",1000,0]',
-        '',
-        '["`", "--- Exception Handling ---"]',
-        '["try","abc",["catch","exc",["list",["`","exc was:"],"exc"]]]',
-        '["try",["throw",123],["catch","exc",["list",["`","exc was:"],"exc"]]]',
-        '',
-        '["`", "--- Macros ---"]',
-        '["def","unless",["~",["fn",["p","a","b"],["list",["`","if"],"p","b","a"]]]]',
-        '["unless",false,7,8]',
-        '["unless",true,7,8]',
-    ].join("\n");
-
-    var b = document.body;
-    var bar = document.getElementById('bar');
-    var t = document.getElementsByTagName('textarea');
-    t[0].innerHTML = example_code;
-    t[0].onkeyup = repl;
-    repl();
-</script>
 </html>

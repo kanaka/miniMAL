@@ -1,0 +1,63 @@
+/* Outer console element */
+#console {
+}
+/* The inner console element. */
+.jqconsole {
+  background-color: black;;
+}
+.jqconsole-prompt {
+  color: #0d0;
+}
+.jqconsole-old-prompt {
+  color: #0b0;
+  font-weight: normal;
+}
+.jqconsole-input {
+  color: #dd0;
+}
+.jqconsole-old-input {
+  color: #bb0;
+  font-weight: normal;
+}
+.jqconsole-output {
+  font-weight: lighter;
+  font-family:monospace;
+  color: grey;
+}
+.jqconsole-return {
+  font-weight: normal;
+  font-family:monospace;
+  color: white;
+}
+.jqconsole-error {
+  font-weight: normal;
+  font-family:monospace;
+  color: red;
+}
+/* The cursor. */
+.jqconsole-cursor {
+  font-weight: normal;
+  font-family:monospace;
+  background-color: #BDB;
+}
+/* The cursor color when the console looses focus. */
+.jqconsole-blurred .jqconsole-cursor {
+  font-weight: normal;
+  font-family:monospace;
+  background-color: #444;
+}
+.brace {
+  color: #00FFFF;
+}
+.paren {
+  color: #FF00FF;
+}
+.bracket {
+  color: #FFFF00;
+}
+.dquote {
+  color: #FF8888;
+}
+.jqconsole-composition {
+  background-color: red;
+}
