@@ -24,7 +24,7 @@ fairly different from mal so it has become a standalone project.
 
 ### Usage
 
-You can try out miniMAL with the [online "REPL"](http://kanaka.github.io/miniMAL/).
+You can try out miniMAL with the [online REPL](http://kanaka.github.io/miniMAL/).
 
 There are several different ways to use and/or integrate miniMAL:
 
