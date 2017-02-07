@@ -75,7 +75,7 @@
 ["def", "double", ["fn", ["a"], ["*", 2, "a"]]]
 ["double", 3]
 ;=>6
-["map", "double", "nums"] 
+["map", "double", "nums"]
 ;=>[2,4,6]
 ["map", ["fn", ["x"], ["string?", "x"]], ["list", 1, ["`", "two"], ["list", 3]]]
 ;=>[false,true,false]

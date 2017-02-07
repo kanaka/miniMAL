@@ -37,9 +37,7 @@
 ["inc3", 9]
 ;=>12
 
-;;;;;
-;;;;; Testing that ARGS exists and is an empty list
-;;;[list? ARGS]
-;;;;=>true
+;;
+;; Testing that ARGS exists and is an empty list
 "ARGS"
 ;=>[]

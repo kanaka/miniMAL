@@ -8,7 +8,7 @@
 ["def", "string?", ["fn", ["a"],
   ["if", ["=", "a", null],
     false,
-    ["=", ["typeof", "a"], ["`",  "str"]]]]],
+    ["=", ["type", "a"], ["type", ["`",  ""]]]]]],
 
 ["def", "pr-list*", ["fn", ["a", "pr", "sep"],
   ["let", ["lst", ["map", ["fn", ["x"],
@@ -28,7 +28,7 @@
 ["def", "println", ["fn", ["&", "a"],
   ["print", ["pr-list*", "a", false, ["`", " "]]]]],
 
-["def", "list?", ["fn", ["a"], ["=", ["`", "list"], ["typeof", "a"]]]],
+["def", "list?", ["fn", ["a"], ["=", ["type", ["list"]], ["type", "a"]]]],
 ["def", "contains?", ["fn", ["a", "b"], [ [".-", "a", ["`", "__contains__"]], "b"]]],
 ["def", "keys", ["fn", ["a"], [ [".-", "a", ["`", "keys"]]]]],
 ["def", "vals", ["fn", ["a"], [ [".-", "a", ["`", "values"]]]]],
@@ -91,7 +91,7 @@
     null]]]],
 
 ["def", "classOf", ["fn", ["a"],
-  ["typeof", "a"]]],
+  [".-", ["type", "a"], ["`", "__name__"]]]],
 
 null
 ]

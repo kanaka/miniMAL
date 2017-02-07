@@ -1,20 +1,7 @@
 ;; Stub out "~"
-["def", "~", ["fn", [], null]]
+["def", "~", ["fn", ["a"], null]]
 ;; Load core.json
 ["load", ["`", "core.json"]]
-
-;; Testing variable length arguments
-[ ["fn", ["&", "more"], ["count", "more"]], 1, 2, 3]
-;=>3
-[ ["fn", ["&", "more"], ["count", "more"]], 1]
-;=>1
-[ ["fn", ["&", "more"], ["count", "more"]] ]
-;=>0
-[ ["fn", ["a", "&", "more"], ["count", "more"]], 1, 2, 3]
-;=>2
-[ ["fn", ["a", "&", "more"], ["count", "more"]], 1]
-;=>0
-
 
 ;; Testing comments in a file
 ["load", ["`", "../tests/incB.json"]]
@@ -29,3 +16,205 @@
 ["load", ["`", "../tests/incC.json"]]
 "mymap"
 ;=>{"a":1}
+
+
+;; Testing postponed tests that depend on interop/core.json
+
+;;
+;; These would normally be in step4
+
+;; Testing "list", functions
+["list?", ["list"]]
+;=>true
+["empty?", ["list"]]
+;=>true
+["empty?", ["list", 1]]
+;=>false
+["list", 1, 2, 3]
+;=>[1,2,3]
+["count", ["list", 1, 2, 3]]
+;=>3
+["count", ["list"]]
+;=>0
+;;;["count", null]
+;;;;=>0
+["if", [">", ["count", ["list", 1, 2, 3]], 3], ["`", "yes"], ["`", "no"]]
+;=>"no"
+["if", [">=", ["count", ["list", 1, 2, 3]], 3], ["`", "yes"], ["`", "no"]]
+;=>"yes"
+
+;; Testing math functions
+
+[">", 2, 1]
+;=>true
+[">" ,1, 1]
+;=>false
+[">" ,1, 2]
+;=>false
+
+[">=", 2, 1]
+;=>true
+[">=", 1, 1]
+;=>true
+[">=", 1, 2]
+;=>false
+
+["<=", 2, 1]
+;=>false
+["<=", 1, 1]
+;=>true
+["<=", 1, 2]
+;=>true
+
+;; Testing equality
+
+;;; This is different behavior than mal
+["if", ["`", ""], 7, 8]
+;=>8
+
+["=", ["`", ""], ["`", ""]]
+;=>true
+["=", ["`", "abc"], ["`", ""]]
+;=>false
+["=", ["`", ""], ["`", "abc"]]
+;=>false
+["=", ["`", "abc"], ["`", "def"]]
+;=>false
+["=", ["list"], ["`", ""]]
+;=>false
+["=", ["`", ""], ["list"]]
+;=>false
+
+;; Testing variable length arguments
+[ ["fn", ["&", "more"], ["count", "more"]], 1, 2, 3]
+;=>3
+[ ["fn", ["&", "more"], ["count", "more"]], 1]
+;=>1
+[ ["fn", ["&", "more"], ["count", "more"]] ]
+;=>0
+[ ["fn", ["a", "&", "more"], ["count", "more"]], 1, 2, 3]
+;=>2
+[ ["fn", ["a", "&", "more"], ["count", "more"]], 1]
+;=>0
+
+;; Testing do form
+["do", ["prn", ["`", "prn output1"]]]
+; "prn output1"
+;=>null
+["do", ["prn", ["`", "prn output2"]], 7]
+; "prn output2"
+;=>7
+["do", ["prn", ["`", "prn output1"]], ["prn", ["`", "prn output2"]], ["+", 1, 2]]
+; "prn output1"
+; "prn output2"
+;=>3
+
+;; -----------------------------------------------------
+;;
+;; Testing string quoting
+
+["`", ""]
+;=>""
+
+["`", "abc"]
+;=>"abc"
+
+["`", "abc  def"]
+;=>"abc  def"
+
+["`", "\""]
+;=>"\""
+
+
+;; Testing pr-str
+
+["pr-str"]
+;=>""
+
+["pr-str", ["`", ""]]
+;=>"\"\""
+
+["pr-str", ["`", "abc"]]
+;=>"\"abc\""
+
+["pr-str", ["`", "abc  def"], ["`", "ghi jkl"]]
+;=>"\"abc  def\" \"ghi jkl\""
+
+["pr-str", ["`", "\""]]
+;=>"\"\\\"\""
+
+["pr-str", ["list", 1, 2, ["`", "abc"], ["`", "\""]], ["`", "def"]]
+;=>"[1,2,\"abc\",\"\\\"\"] \"def\""
+
+
+;; Testing str
+
+["str"]
+;=>""
+
+["str", ["`", ""]]
+;=>""
+
+["str", ["`", "abc"]]
+;=>"abc"
+
+["str", ["`", "\""]]
+;=>"\""
+
+["str", 1, ["`", "abc"], 3]
+;=>"1abc3"
+
+["str", ["`", "abc  def"], ["`", "ghi jkl"]]
+;=>"abc  defghi jkl"
+
+
+;; Testing prn
+["prn"]
+; 
+;=>null
+
+["prn", ["`", ""]]
+; ""
+;=>null
+
+["prn", ["`", "abc"]]
+; "abc"
+;=>null
+
+["prn", ["`", "abc  def"], ["`", "ghi jkl"]]
+; "abc  def" "ghi jkl"
+
+["prn", ["`", "\""]]
+; "\""
+;=>null
+
+["prn", ["list", 1, 2, ["`", "abc"], ["`", "\""]], ["`", "def"]]
+; [1,2,"abc","\""] "def"
+;=>null
+
+
+;; Testing println
+["println"]
+; 
+;=>null
+
+["println", ["`", ""]]
+; 
+;=>null
+
+["println", ["`", "abc"]]
+; abc
+;=>null
+
+["println", ["`", "abc  def"], ["`", "ghi jkl"]]
+; abc  def ghi jkl
+
+["println", ["`", "\""]]
+; "
+;=>null
+
+;;; Unquoting of strings for println doesn't work recursively yet
+;;;["println", ["list", 1, 2, ["`", "abc"], ["`", "\""]], ["`", "def"]]
+;;;; [1,2,abc,"] def
+;;;;=>null
+

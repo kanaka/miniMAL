@@ -61,8 +61,8 @@ E = Object.assign(Object.create(global), {
     "-":     (...a) => a[0]-a[1],
     "*":     (...a) => a[0]*a[1],
     "/":     (...a) => a[0]/a[1],
-    "list":  (...a) => a.slice(),
-    "map":   (...a) => a[1].map(a[0]),
+    "list":  (...a) => a,
+    "map":   (...a) => a[1].map(x => a[0](x)),
 })
 
 // Node specific
