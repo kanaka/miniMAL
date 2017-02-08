@@ -145,6 +145,7 @@ if __name__ == "__main__":
             pass
         sys.exit(0)
 
+    print("miniMAL 0.0.9")
     while True:
         try:
             line = input("> ")

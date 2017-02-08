@@ -13,6 +13,7 @@ Object.assign(m, {
 if (process.argv[2]) {
     m.load(process.argv[2])
 } else {
+    console.log("miniMAL 0.0.9")
     require("repl").start({
         eval: (...a) => console.log(m.rep(a[0])) | a[3](),
         terminal: false})

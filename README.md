@@ -18,6 +18,12 @@ fairly different from mal so it is a standalone project.
 
 You can try out miniMAL with the [online REPL](http://kanaka.github.io/miniMAL/).
 
+The easiest way to install miniMAL is via npm:
+
+```bash
+sudo npm install -g minimal-lisp
+```
+
 There are several different ways to use and/or integrate miniMAL:
 
 * **Start a REPL**: run the miniMAL REPL (read-eval-print-loop). Requires
@@ -104,8 +110,8 @@ m.eval(["+", 2, 3]);
   variable numbers of parameters using the Clojure style "&"
   delimeter.
 ```json
-["def", "ignore1", ["fn", ["a", "&", "b"], "b"]]
-["ignore1", 1, 2, 3]
+["def", "drop1", ["fn", ["a", "&", "b"], "b"]]
+["drop1", 1, 2, 3]
 =>[2,3]
 ```
 
