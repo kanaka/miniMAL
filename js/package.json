@@ -14,6 +14,7 @@
     "files": [
         "miniMAL",
         "miniMAL-node.js",
+        "index.js",
         "miniMAL-min.js",
         "miniMAL-js1k.js",
         "step*.js",

@@ -18,7 +18,7 @@ fairly different from mal so it is a standalone project.
 
 You can try out miniMAL with the [online REPL](http://kanaka.github.io/miniMAL/).
 
-The easiest way to install miniMAL is via npm:
+Install the miniMAL binary using npm:
 
 ```bash
 sudo npm install -g minimal-lisp
@@ -29,13 +29,13 @@ There are several different ways to use and/or integrate miniMAL:
 * **Start a REPL**: run the miniMAL REPL (read-eval-print-loop). Requires
   Node.js.
 ```bash
-./miniMAL
+miniMAL
 ```
 
 * **Run a miniMAL program**: run a miniMAL program and then exit.
   Requires Node.js.
 ```bash
-./miniMAL hello.json
+miniMAL hello.json
 ```
 
 * **As a shebang script**: add a shebang line to the top of your
@@ -48,10 +48,17 @@ chmod +x hello2.json
 ./hello2.json
 ```
 
+To use miniMAL as a library in another project, first install the
+module locally using npm:
+
+```bash
+sudo npm install minimal-lisp
+```
+
 * **Node.js library**: you can use the miniMAL Node.js library to
   evaluate miniMAL source code in a regular Node.js program.
 ```javascript
-var miniMAL = require('./miniMAL-node.js'),
+var miniMAL = require('minimal-lisp'),
     m = miniMAL();
 m.eval(["+", 2, 3]); 
 ```
@@ -59,7 +66,7 @@ m.eval(["+", 2, 3]);
 * **Web library**: you can use the miniMAL web library to evaluate
   miniMAL code in your web application.
 ```html
-<script src="miniMAL-min.js"></script>
+<script src="node_modules/minimal-lisp/js/web/miniMAL-min.js"></script>
 <script>
 var m = miniMAL();
 m.eval(["+", 2, 3]); 
