@@ -81,15 +81,6 @@
           ["`", "or_FIXME"],
           ["concat", ["`", ["or"]], ["rest", "xs"]]]]]]]]],
 
-["def", "cond", ["~", ["fn", ["&", "clauses"],
-  ["if", [">", ["count", "clauses"], 0],
-    ["list", ["`", "if"], ["first", "clauses"],
-               ["if", [">", ["count", "clauses"], 1],
-                 ["nth", "clauses", 1],
-                 ["throw", ["`", "cond requires an even number of forms"]]],
-               ["cons", ["`", "cond"], ["rest", ["rest", "clauses"]]]],
-    null]]]],
-
 ["def", "classOf", ["fn", ["a"],
   [".-", ["type", "a"], ["`", "__name__"]]]],
 

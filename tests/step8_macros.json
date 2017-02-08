@@ -60,6 +60,22 @@
 ;=>[8,9]
 
 
+;; Testing and macro
+["and"]
+;=>true
+["and", 1]
+;=>1
+["and", 1, 2]
+;=>2
+["and", 1, 2, 3]
+;=>3
+["and", 1, 2, 3, 4]
+;=>4
+["and", 1, 2, 3, 4, false]
+;=>false
+["and", 1, 2, 3, 4, false, 5]
+;=>false
+
 ;; Testing or macro
 ["or"]
 ;=>null
@@ -79,6 +95,8 @@
 ;=>4
 
 ;; Testing cond macro
+["def", "cond", ["~", ["fn", ["&", "xs"], ["if", [">", ["count", "xs"], 0], ["list", ["`", "if"], ["first", "xs"], ["if", [">", ["count", "xs"], 1], ["nth", "xs", 1], ["throw", ["`", "cond: odd # of forms"]]], ["cons", ["`", "cond"], ["rest", ["rest", "xs"]]]], null]]]]
+
 
 ["cond"]
 ;=>null
@@ -94,26 +112,6 @@
 ;=>8
 ["cond", false, 7, false, 8, false, 9]
 ;=>null
-
-;;;;;
-;;;;; Loading core.mal
-;;;["load", "../core.mal"]
-
-;; Testing and macro
-["and"]
-;=>true
-["and", 1]
-;=>1
-["and", 1, 2]
-;=>2
-["and", 1, 2, 3]
-;=>3
-["and", 1, 2, 3, 4]
-;=>4
-["and", 1, 2, 3, 4, false]
-;=>false
-["and", 1, 2, 3, 4, false, 5]
-;=>false
 
 ;;;;; Testing -> macro
 ;;;

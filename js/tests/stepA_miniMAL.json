@@ -8,6 +8,10 @@
 ;=>3
 ["get", "b", 1]
 8
+["def", "o", ["new", "Object"]]
+;=>{}
+["def", "f", ["new", ["fn", [], null]]]
+;=>{}
 
 ;;
 ;; Testing isa

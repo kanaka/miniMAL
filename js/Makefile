@@ -4,7 +4,8 @@ STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
 
 .SECONDARY:
 
-all: miniMAL-js1k.js miniMAL-node.js miniMAL-min.js web/miniMAL-core.js
+all: miniMAL-js1k.js miniMAL-node.js miniMAL-min.js \
+     web/miniMAL-min.js web/miniMAL-core.js
 
 #
 # Uglify
@@ -66,9 +67,10 @@ web/miniMAL-min.js: miniMAL-min.js
 	cp $< $@
 
 web/miniMAL-core.js: core.json
-	echo "var core_ns =" > $@.tmp
-	cat $< >> $@.tmp
-	node ./RegPack/regPack.js $(REGPACK_OPTS) $@.tmp >> $@
+	echo -n "var core_ns =" > $@
+	cat $< >> $@
+	UglifyJS2/bin/uglifyjs -r core_ns $@ $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
+	node ./RegPack/regPack.js $(REGPACK_OPTS) $@.tmp > $@
 	rm $@.tmp
 
 miniMAL-js1k.js: stepB_js1k-regpack.js

@@ -44,7 +44,9 @@ function EVAL(ast, env) {
     } else if (ast[0] == "if") {  // branching conditional
         ast = EVAL(ast[1], env) ? ast[2] : ast[3] // TCO
     } else if (ast[0] == "fn") {  // define new function (lambda)
-        let f = (...a) => EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
+        let f = function(...a) {
+            return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
+        }
         f.ast = [ast[2], env, ast[1]] // f.ast compresses more than f.data
         return f
     } else {                      // invoke list form

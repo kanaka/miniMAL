@@ -1,26 +1,18 @@
 ## miniMAL
 
-A Clojure inspired Lisp implemented in less than 1024 bytes of
-JavaScript. There is also an implementation of miniMAL in python
-that is about 1.4K as a pyz file (gzip'd).
+A Delightfully Dimuntive Lisp.
 
-### Rationale
-
-I originally started implementing a tiny Lisp interpreter as a quick
-hack to submit to the [2015 JS1K
-competition](http://js1k.com/2015-hypetrain/)
-([demo 2209](http://js1k.com/2015-hypetrain/demo/2209)). However,
-I soon realized that I could fit far more functionality into 1024
-bytes of JavaScript than I expected and so miniMAL was born as
-a "full-fledged" Lisp in its own right.
+The miniMAL core interpreter is implemented in less than 1024 bytes of
+JavaScript. There is also an implementation of miniMAL in python that
+is about 1.4K as a pyz file (gzip'd).
 
 The design of miniMAL started with
 [mal](https://github.com/kanaka/mal) (a Clojure-insipred pedagogical
-Lisp interpreter with implementations in over two dozen languages).
+Lisp interpreter with implementations in over sixty languages).
 And in fact, in the miniMAL repository you can see the incremental
 steps to build up the interpreter just like for each of the mal
 implementations. However, the syntax and functionality of miniMAL is
-fairly different from mal so it has become a standalone project.
+fairly different from mal so it is a standalone project.
 
 ### Usage
 
@@ -212,6 +204,16 @@ space for an online "REPL".
 ["unless", true, 7, 8]
 =>8
 ```
+
+### Rationale
+
+I originally started implementing a tiny Lisp interpreter as a quick
+hack to submit to the [2015 JS1K
+competition](http://js1k.com/2015-hypetrain/)
+([demo 2209](http://js1k.com/2015-hypetrain/demo/2209)). However,
+I soon realized that I could fit far more functionality into 1024
+bytes of JavaScript than I expected and so miniMAL was born as
+a "full-fledged" Lisp in its own right.
 
 ### License
 

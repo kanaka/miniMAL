@@ -46,7 +46,9 @@ function EVAL(ast, env) {
             return EVAL(ast[3],env);
         }
     } else if (ast[0] == "fn") {  // define new function (lambda)
-        return (...a) => EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
+        return function(...a) {
+            return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
+        }
     } else {                      // invoke list form
         let el = eval_ast_or_bind(ast, env),
             f = el[0]

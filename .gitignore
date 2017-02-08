@@ -8,3 +8,4 @@ RegPack/node_modules
 old
 notes
 *.pyc
+*-minipy.py
