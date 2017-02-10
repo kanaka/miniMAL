@@ -78,7 +78,7 @@ E = Object.assign(Object.create(global), {
     //"map":   (...a) => a[1].map(x => a[0](x)),
 
     "read":  (...a) => JSON.parse(a[0]),
-    "slurp": (...a) => require("fs").readFileSync(a[0],"utf-8"),
+    "slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
     "load":  (...a) => E.eval(JSON.parse(E.slurp(a[0]))),
 
     "ARGS":  process.argv.slice(3)

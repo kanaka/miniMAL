@@ -1,0 +1,8 @@
+["do",
+
+["def", "~", ["fn", ["a"], null]],
+["load", ["`", "core.json"]],
+
+["prn", "ARGS"]
+
+]

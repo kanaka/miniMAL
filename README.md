@@ -3,8 +3,8 @@
 A Delightfully Dimuntive Lisp.
 
 The miniMAL core interpreter is implemented in less than 1024 bytes of
-JavaScript. There is also an implementation of miniMAL in python that
-is about 1.4K as a pyz file (gzip'd).
+JavaScript (uglify/regpack). There is also an implementation of
+miniMAL in python that is about 1.4K as a pyz file (gzip'd).
 
 The design of miniMAL started with
 [mal](https://github.com/kanaka/mal) (a Clojure-insipred pedagogical
@@ -13,6 +13,12 @@ And in fact, in the miniMAL repository you can see the incremental
 steps to build up the interpreter just like for each of the mal
 implementations. However, the syntax and functionality of miniMAL is
 fairly different from mal so it is a standalone project.
+
+Even though miniMAL is tiny it is actually a very powerful Lisp with
+advanced features including: higher-order functions, tail-call
+optimization, macros, JavaScript interop, and error-handling. miniMAL
+is powerful enough that it has been used to create a full
+[implementation of mal](https://github.com/kanaka/mal/tree/master/miniMAL).
 
 ### Usage
 
@@ -60,7 +66,7 @@ sudo npm install minimal-lisp
 ```javascript
 var miniMAL = require('minimal-lisp'),
     m = miniMAL();
-m.eval(["+", 2, 3]); 
+m.eval(["+", 2, 3]);
 ```
 
 * **Web library**: you can use the miniMAL web library to evaluate
@@ -69,7 +75,7 @@ m.eval(["+", 2, 3]);
 <script src="node_modules/minimal-lisp/js/web/miniMAL-min.js"></script>
 <script>
 var m = miniMAL();
-m.eval(["+", 2, 3]); 
+m.eval(["+", 2, 3]);
 </script>
 ```
 
@@ -181,11 +187,8 @@ m.eval(["+", 2, 3]);
 =>__background color set to random hsl value__
 ```
 
-* * *
-
-The following features are supported in the miniMAL standalone web
-library, but were ommitted from the JS1K submission in order to make
-space for an online "REPL".
+*The following features are omitted from JS1K version of the
+implementation in order to make space for example code.*
 
 * **Exception Handling**: miniMAL supports try/catch/throw style
   exception handling. The thrown exceptions can be any arbitrary type.
@@ -199,17 +202,17 @@ space for an online "REPL".
 ```
 
 * **Macros**: miniMAL has the ability to define macros. Macros allow
-  a program to create new syntactic structures. When an normal
-  function call is encountered, the arguments to the function are all
+  a program to create new syntactic structures. When a normal
+  function call is handled, the arguments to the function are all
   evaluated first before the function is called. A macro receives all
   its arguments unevaluated and can manipulate the raw arguments.
   Whatever value is returned from the macro (perhaps a re-written
   function call) is evaluated again. In the following example, the
   "unless" macro reverses the logic of the if statement. If "unless"
-  was a regular function, the conditional and true and false positions
-  would all be evaluated before the "unless" function was called.
-  However, defining "unless" as a macro allows either the true or
-  false position to be evaluated (and the conditional of course).
+  was a defined as a regular function both of the true and false
+  positions would all be evaluated before the "unless" function was
+  called.  However, defining "unless" as a macro allows either the
+  true or false position to be evaluated but not both .
 ```json
 ["def", "unless", ["~", ["fn", ["p", "a", "b"], ["list", ["`", "if"], "p", "b", "a"]]]]
 ["unless", false, 7, 8]

@@ -18,8 +18,8 @@ let eval_ast_or_bind = function(ast, env, exprs) {
         : (typeof ast == "string")                   // symbol?
             ? ast in env                             // symbol in env?
                 ? env[ast]                           // lookup symbol
-                //: E.throw(ast + " not found")        // undefined symbol
-                : null[ast]                          // undefined symbol
+                : E.throw(ast + " not found")        // undefined symbol
+                ///: null[ast]                          // undefined symbol
             : ast                                    // ast unchanged
 }
 
@@ -115,7 +115,7 @@ E = Object.assign(Object.create(global), {
     "throw": (...a) => { throw(a[0]) },
 
     "read":  (...a) => JSON.parse(a[0]),
-    "slurp": (...a) => require("fs").readFileSync(a[0],"utf-8"),
+    "slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
     "load":  (...a) => E.eval(JSON.parse(E.slurp(a[0]))),
 
     "ARGS":  process.argv.slice(3)

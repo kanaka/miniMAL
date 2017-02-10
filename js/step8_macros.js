@@ -99,11 +99,15 @@ E = Object.assign(Object.create(global), {
     "-":     (...a) => a[0]-a[1],
     "*":     (...a) => a[0]*a[1],
     "/":     (...a) => a[0]/a[1],
+    "isa":   (...a) => a[0] instanceof a[1],
+    "type":  (...a) => typeof a[0],
+    "new":   (...a) => new (a[0].bind(...a)),
+    "del":   (...a) => delete a[0][a[1]],
     //"list":  (...a) => a,
     //"map":   (...a) => a[1].map(x => a[0](x)),
 
     "read":  (...a) => JSON.parse(a[0]),
-    "slurp": (...a) => require("fs").readFileSync(a[0],"utf-8"),
+    "slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
     "load":  (...a) => E.eval(JSON.parse(E.slurp(a[0]))),
 
     "ARGS":  process.argv.slice(3)

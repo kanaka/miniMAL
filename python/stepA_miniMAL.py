@@ -119,7 +119,7 @@ repl_env = Env(outer=Env(data=builtins.__dict__), data={
     '/':         lambda a,b: int(a/b),
     'list':      lambda *a: list(a),
     'get':       lambda a,b: a[b],
-    'set':       lambda a,b,c: a.__setitem__(b, c) or c,
+    'set':       lambda a,b,c: a.__setitem__(b, c) or a,
     'map':       lambda a,b: list(map(a,b)),
     'apply':     lambda a,b: a(*b),
     'throw':     throw,
@@ -145,7 +145,7 @@ if __name__ == "__main__":
             pass
         sys.exit(0)
 
-    print("miniMAL 0.0.9")
+    print("miniMAL 1.0.0")
     while True:
         try:
             line = input("> ")

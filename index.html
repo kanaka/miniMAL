@@ -33,7 +33,7 @@ this software.
     </div>
     <div class="eight columns">
       <a href="js/web/miniMAL-min.js">Core Interpreter</a>: 943 bytes<br>
-      <a href="js/web/miniMAL-core.js">Library Functions</a>: 989 bytes
+      <a href="js/web/miniMAL-core.js">Library Functions</a>: 1001 bytes
     </div>
     <div class="eight columns">
       <div class="source">
@@ -53,7 +53,7 @@ this software.
         <table>
           <tr class="row-one">
             <td class="row-label">Scalars</td>
-            <td>123, nil, true, false, "symbol", "+"</td>
+            <td>123, null, true, false, "symbol", "+"</td>
           </tr>
           <tr>
             <td class="row-label">Strings</td>
@@ -178,7 +178,7 @@ this software.
           </tr>
           <tr>
             <td class="row-label">Predicates</td>
-            <td>"nil?", "true?", "false?", "string?", "list?",
+            <td>"null?", "true?", "false?", "string?", "list?",
                 "contains?", "empty?"</td>
           </tr>
           <tr class="row-one">
@@ -290,7 +290,7 @@ this software.
       })
 
       // Print out the banner
-      m.eval(["println", ["`", "miniMAL 0.0.9"]])
+      m.eval(["println", ["`", "miniMAL 1.0.0"]])
 
 
       //

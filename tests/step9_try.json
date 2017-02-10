@@ -37,9 +37,9 @@
 ;;;[symbol? "abc"]
 ;;;;=>false
 
-["nil?", null]
+["null?", null]
 ;=>true
-["nil?", true]
+["null?", true]
 ;=>false
 
 ["true?", true]
@@ -87,70 +87,50 @@
 ;;;;=>false
 ;;;["map?", ["`", "abc"]]
 ;;;;=>false
-;;;
-;;;;;
-;;;;; Testing hash-maps
-;;;["hash-map", ["`", "a"], 1]
-;;;;=>{"a":1}
-;;;
-;;;{"a": 1}
-;;;;=>{"a":1}
-;;;
-;;;["set", {}, ["`", "a"], 1]
-;;;;=>{"a":1}
-;;;
-;;;["get", ["set", ["set", {"a": 1}, ["`", "b"], 2], ["`", "c"], 3], ["`", "a"]]
-;;;;=>1
-;;;
-;;;[def! hm1 [hash-map]]
-;;;;=>{}
-;;;
-;;;[map? hm1]
-;;;;=>true
-;;;[map? 1]
-;;;;=>false
-;;;[map? "abc"]
-;;;;=>false
-;;;
-;;;[get nil "a"]
-;;;;=>nil
-;;;
-;;;[get hm1 "a"]
-;;;;=>nil
-;;;
-;;;[contains? hm1 "a"]
-;;;;=>false
-;;;
-;;;[def! hm2 [assoc hm1 "a" 1]]
-;;;;=>{"a" 1}
-;;;
-;;;[get hm1 "a"]
-;;;;=>nil
-;;;
-;;;[contains? hm1 "a"]
-;;;;=>false
-;;;
-;;;[get hm2 "a"]
-;;;;=>1
-;;;
-;;;[contains? hm2 "a"]
-;;;;=>true
-;;;
-;;;
-;;;;;; TODO: fix. Clojure returns nil but this breaks mal impl
-;;;[keys hm1]
-;;;;=>[]
-;;;
-;;;[keys hm2]
-;;;;=>["a"]
-;;;
-;;;;;; TODO: fix. Clojure returns nil but this breaks mal impl
-;;;[vals hm1]
-;;;;=>[]
-;;;
-;;;[vals hm2]
-;;;;=>[1]
-;;;
+
+;;
+;; Testing hash-maps
+["def", "hm0", {"a": 1}]
+;=>{"a":1}
+
+["set", {}, ["`", "a"], 1]
+;=>{"a":1}
+
+["get", ["set", ["set", {"a": 1}, ["`", "b"], 2], ["`", "c"], 3], ["`", "a"]]
+;=>1
+
+["def", "hm1", {}]
+;=>{}
+
+["def", "hm2", {"a": 7}]
+;=>{"a":7}
+
+["get", "hm1", ["`", "a"]]
+;=>null
+
+["get", "hm2", ["`", "a"]]
+;=>7
+
+["contains?", "hm1", ["`", "a"]]
+;=>false
+
+["contains?", "hm2", ["`", "a"]]
+;=>true
+
+;;; TODO: fix. Clojure returns nil but this breaks mal impl
+["keys", "hm1"]
+;=>[]
+
+["keys" ,"hm2"]
+;=>["a"]
+
+;;; TODO: fix. Clojure returns nil but this breaks mal impl
+["vals", "hm1"]
+;=>[]
+
+["vals", "hm2"]
+;=>[7]
+
 ;;;[count [keys [assoc hm2 "b" 2 "c" 3]]]
 ;;;;=>3
 ;;;
