@@ -2,6 +2,8 @@
 // Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
+!function() {
+
 // 2 args: eval_ast, 3 args: env_bind
 let eval_ast_or_bind = function(ast, env, exprs) {
     if (exprs) {
@@ -9,7 +11,7 @@ let eval_ast_or_bind = function(ast, env, exprs) {
         // corresponding values in exprs
         env = Object.create(env)
         ast.some((a,i) => a == "&" ? env[ast[i+1]] = exprs.slice(i)
-                                   : (env[a] = exprs[i], false) )
+                                   : (env[a] = exprs[i], 0))
         return env
     }
     // Evaluate the form/ast
@@ -47,14 +49,14 @@ function EVAL(ast, env) {
         let f = function(...a) {
             return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
         }
-        f.ast = [ast[2], env, ast[1]] // f.ast compresses more than f.data
+        f.A = [ast[2], env, ast[1]] // f.A compresses more than f.data
         return f
     } else {                      // invoke list form
         let el = eval_ast_or_bind(ast, env),
             f = el[0]
-        if (f.ast) {
-            ast = f.ast[0]
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)) // TCO
+        if (f.A) {
+            ast = f.A[0]
+            env = eval_ast_or_bind(f.A[2], f.A[1], el.slice(1)) // TCO
         } else {
             return f(...el.slice(1))
         }
@@ -62,7 +64,7 @@ function EVAL(ast, env) {
   }
 }
 
-E = Object.assign(Object.create(global), {
+let E = Object.assign(this, {
     "=":     (...a) => a[0]===a[1],
     "<":     (...a) => a[0]<a[1],
     "+":     (...a) => a[0]+a[1],
@@ -79,6 +81,8 @@ E = Object.assign(Object.create(global), {
 
 // Node specific
 require("repl").start({
-    eval:     (...a) => a[3](!1,JSON.stringify(EVAL(JSON.parse(a[0]),E))),
-    writer:   (...a) => a[0],
-    terminal: false})
+    eval:     (...a) => a[3](0,EVAL(JSON.parse(a[0]),E)),
+    writer:   JSON.stringify,
+    terminal: 0})
+
+}()

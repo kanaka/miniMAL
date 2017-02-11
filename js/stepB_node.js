@@ -11,7 +11,7 @@ let eval_ast_or_bind = function(ast, env, exprs) {
         // corresponding values in exprs
         env = Object.create(env)
         ast.some((a,i) => a == "&" ? env[ast[i+1]] = exprs.slice(i)
-                                   : (env[a] = exprs[i], false) )
+                                   : (env[a] = exprs[i], 0))
         return env
     }
     // Evaluate the form/ast
@@ -28,7 +28,7 @@ let eval_ast_or_bind = function(ast, env, exprs) {
 function macroexpand(ast, env) {
     while (ast instanceof Array
             && ast[0] in env
-            && env[ast[0]]._M) {
+            && env[ast[0]].M) {
         ast = env[ast[0]](...ast.slice(1))
     }
     return ast
@@ -47,7 +47,7 @@ function EVAL(ast, env) {
         return env[ast[1]] = EVAL(ast[2], env)
     } else if (ast[0] == "~") {  // mark as macro
         let f = EVAL(ast[1], env)  // eval regular function
-        f._M = 1 // mark as macro
+        f.M = 1 // mark as macro
         return f
     } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env)
@@ -82,14 +82,14 @@ function EVAL(ast, env) {
         let f = function(...a) {
             return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
         }
-        f.ast = [ast[2], env, ast[1]] // f.ast compresses more than f.data
+        f.A = [ast[2], env, ast[1]] // f.A compresses more than f.data
         return f
     } else {                      // invoke list form
         let el = eval_ast_or_bind(ast, env),
             f = el[0]
-        if (f.ast) {
-            ast = f.ast[0]
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)) // TCO
+        if (f.A) {
+            ast = f.A[0]
+            env = eval_ast_or_bind(f.A[2], f.A[1], el.slice(1)) // TCO
         } else {
             return f(...el.slice(1))
         }
@@ -120,7 +120,7 @@ E = Object.assign(Object.create(E), {
 
     "read":  (...a) => JSON.parse(a[0]),
     "slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
-    "load":  (...a) => E.eval(JSON.parse(E.slurp(a[0]))),
+    "load":  (...a) => EVAL(JSON.parse(require("fs").readFileSync(a[0],"utf8")),E),
 
     "rep":   (...a) => JSON.stringify(EVAL(JSON.parse(a[0]),E))
 })

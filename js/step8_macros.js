@@ -2,6 +2,8 @@
 // Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
+!function() {
+
 // 2 args: eval_ast, 3 args: env_bind
 let eval_ast_or_bind = function(ast, env, exprs) {
     if (exprs) {
@@ -9,7 +11,7 @@ let eval_ast_or_bind = function(ast, env, exprs) {
         // corresponding values in exprs
         env = Object.create(env)
         ast.some((a,i) => a == "&" ? env[ast[i+1]] = exprs.slice(i)
-                                   : (env[a] = exprs[i], false) )
+                                   : (env[a] = exprs[i], 0))
         return env
     }
     // Evaluate the form/ast
@@ -25,7 +27,7 @@ let eval_ast_or_bind = function(ast, env, exprs) {
 function macroexpand(ast, env) {
     while (ast instanceof Array
             && ast[0] in env
-            && env[ast[0]]._M) {
+            && env[ast[0]].M) {
         ast = env[ast[0]](...ast.slice(1))
     }
     return ast
@@ -44,7 +46,7 @@ function EVAL(ast, env) {
         return env[ast[1]] = EVAL(ast[2], env)
     } else if (ast[0] == "~") {  // mark as macro
         let f = EVAL(ast[1], env)  // eval regular function
-        f._M = 1 // mark as macro
+        f.M = 1 // mark as macro
         return f
     } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env)
@@ -73,14 +75,14 @@ function EVAL(ast, env) {
         let f = function(...a) {
             return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
         }
-        f.ast = [ast[2], env, ast[1]] // f.ast compresses more than f.data
+        f.A = [ast[2], env, ast[1]] // f.A compresses more than f.data
         return f
     } else {                      // invoke list form
         let el = eval_ast_or_bind(ast, env),
             f = el[0]
-        if (f.ast) {
-            ast = f.ast[0]
-            env = eval_ast_or_bind(f.ast[2], f.ast[1], el.slice(1)) // TCO
+        if (f.A) {
+            ast = f.A[0]
+            env = eval_ast_or_bind(f.A[2], f.A[1], el.slice(1)) // TCO
         } else {
             return f(...el.slice(1))
         }
@@ -88,7 +90,7 @@ function EVAL(ast, env) {
   }
 }
 
-E = Object.assign(Object.create(global), {
+let E = Object.assign(this, {
     "js":    eval,
     "eval":  (...a) => EVAL(a[0], E),
 
@@ -100,15 +102,16 @@ E = Object.assign(Object.create(global), {
     "*":     (...a) => a[0]*a[1],
     "/":     (...a) => a[0]/a[1],
     "isa":   (...a) => a[0] instanceof a[1],
-    "type":  (...a) => typeof a[0],
-    "new":   (...a) => new (a[0].bind(...a)),
-    "del":   (...a) => delete a[0][a[1]],
+    // new can use Reflect.construct
+    //"new":   (...a) => new (a[0].bind(...a)),
+    // delete can use Reflect.deleteProperty
+    //"del":   (...a) => delete a[0][a[1]],
     //"list":  (...a) => a,
     //"map":   (...a) => a[1].map(x => a[0](x)),
 
     "read":  (...a) => JSON.parse(a[0]),
     "slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
-    "load":  (...a) => E.eval(JSON.parse(E.slurp(a[0]))),
+    "load":  (...a) => EVAL(JSON.parse(require("fs").readFileSync(a[0],"utf8")),E),
 
     "ARGS":  process.argv.slice(3)
 })
@@ -118,7 +121,9 @@ if (process.argv[2]) {
     E.load(process.argv[2])
 } else {
     require("repl").start({
-        eval:     (...a) => a[3](!1,JSON.stringify(EVAL(JSON.parse(a[0]),E))),
-        writer:   (...a) => a[0],
-        terminal: false})
+        eval:     (...a) => a[3](0,EVAL(JSON.parse(a[0]),E)),
+        writer:   JSON.stringify,
+        terminal: 0})
 }
+
+}()

@@ -9,7 +9,7 @@ var eval_ast_or_bind = function(ast, env, exprs) {
         // corresponding values in exprs
         env = Object.create(env)
         ast.some((a,i) => a == "&" ? env[ast[i+1]] = exprs.slice(i)
-                                   : (env[a] = exprs[i], false) )
+                                   : (env[a] = exprs[i], 0))
         return env
     }
     // Evaluate the form/ast
@@ -72,7 +72,7 @@ function EVAL(ast, env) {
   }
 }
 
-E = Object.assign(Object.create(this), {
+E = Object.assign(this, {
     "js":    eval,
     "eval":  (...a) => EVAL(a[0], E),
 

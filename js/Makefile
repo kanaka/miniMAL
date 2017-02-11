@@ -19,10 +19,10 @@ node_modules/uglify-js:
 	npm install
 
 %-uglify-pretty.js: %.js node_modules/uglify-js
-	UglifyJS2/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
+	UglifyJS2/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"string"/typeof ""/g' > $@
 
 %-uglify.js: %.js node_modules/uglify-js
-	UglifyJS2/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@
+	UglifyJS2/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"string"/typeof ""/g' > $@
 
 #
 # JsCrush
@@ -43,7 +43,7 @@ RegPack/node_modules/minimist:
 	cd RegPack && npm install
 
 %-regpack.js: %-uglify.js RegPack/node_modules/minimist
-	node ./RegPack/regPack.js $(REGPACK_OPTS) $< > $@
+	node ./RegPack/regPack.js $(REGPACK_OPTS) $< | tr -d '\n' > $@
 
 regpack^%: %-regpack.js
 	@true

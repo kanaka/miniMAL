@@ -1,5 +1,9 @@
 ["do",
 
+["def", "new", ["fn", ["a", "&", "b"],
+  [".", "Reflect", ["`", "construct"], "a", "b"]]],
+["def", "del", ["fn", ["a", "b"],
+  [".", "Reflect", ["`", "deleteProperty"], "a", "b"]]],
 ["def", "map", ["fn", ["a", "b"],
   [".", "b", ["`", "map"], ["fn", ["x"], ["a", "x"]]]]],
 ["def", "list", ["fn", ["&", "a"], "a"]],

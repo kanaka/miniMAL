@@ -2,6 +2,8 @@
 // Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
+!function() {
+
 let eval_ast = function(ast, env) {
     // Evaluate the form/ast
     return ast instanceof Array                      // list?
@@ -35,7 +37,7 @@ function EVAL(ast, env) {
     }
 }
 
-E = Object.assign(Object.create(global), {
+let E = Object.assign(this, {
     "+":     (...a) => a[0]+a[1],
     "-":     (...a) => a[0]-a[1],
     "*":     (...a) => a[0]*a[1],
@@ -44,6 +46,8 @@ E = Object.assign(Object.create(global), {
 
 // Node specific
 require("repl").start({
-    eval:     (...a) => a[3](!1,JSON.stringify(EVAL(JSON.parse(a[0]),E))),
-    writer:   (...a) => a[0],
-    terminal: false})
+    eval:     (...a) => a[3](0,EVAL(JSON.parse(a[0]),E)),
+    writer:   JSON.stringify,
+    terminal: 0})
+
+}()

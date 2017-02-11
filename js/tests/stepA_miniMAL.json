@@ -24,12 +24,12 @@
 
 ;;
 ;; Testing type
-["type", 123]
-;=>"number"
-["type", ["`", "123"]]
-;=>"string"
-["type", "b"]
-;=>"object"
+["classOf", 123]
+;=>"[object Number]"
+["classOf", ["`", "123"]]
+;=>"[object String]"
+["classOf", "b"]
+;=>"[object Uint8Array]"
 
 ;;
 ;; Testing del
