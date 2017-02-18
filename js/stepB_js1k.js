@@ -30,14 +30,6 @@ function EVAL(ast, env) {
     // apply
     if (ast[0] == "def") {        // update current environment
         return env[ast[1]] = EVAL(ast[2], env)
-    } else if (ast[0] == "let") { // new environment with bindings
-        env = Object.create(env)
-        for (let i in ast[1]) {
-            if (i%2) {
-                env[ast[1][i-1]] = EVAL(ast[1][i], env)
-            }
-        }
-        ast = ast[2] // TCO
     } else if (ast[0] == "`") {   // quote (unevaluated)
         return ast[1]
     } else if (ast[0] == ".-") {  // get or set attribute
@@ -48,17 +40,28 @@ function EVAL(ast, env) {
         let el = eval_ast_or_bind(ast.slice(1), env),
             x = el[0][el[1]]
         return x.apply(el[0], el.slice(2))
-    } else if (ast[0] == "do") {  // multiple forms (for side-effects)
-        let el = eval_ast_or_bind(ast.slice(1,ast.length-1), env)
-        ast = ast[ast.length-1] // TCO
-    } else if (ast[0] == "if") {  // branching conditional
-        ast = EVAL(ast[1], env) ? ast[2] : ast[3] // TCO
     } else if (ast[0] == "fn") {  // define new function (lambda)
         let f = function(...a) {
             return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
         }
         f.ast = [ast[2], env, ast[1]] // f.ast compresses more than f.data
         return f
+    }
+
+    // TCO cases
+    if (ast[0] == "let") {        // new environment with bindings
+        env = Object.create(env)
+        for (let i in ast[1]) {
+            if (i%2) {
+                env[ast[1][i-1]] = EVAL(ast[1][i], env)
+            }
+        }
+        ast = ast[2]
+    } else if (ast[0] == "do") {  // multiple forms (for side-effects)
+        let el = eval_ast_or_bind(ast.slice(1,ast.length-1), env)
+        ast = ast[ast.length-1]
+    } else if (ast[0] == "if") {  // branching conditional
+        ast = EVAL(ast[1], env) ? ast[2] : ast[3]
     } else {                      // invoke list form
         let el = eval_ast_or_bind(ast, env),
             f = el[0]
@@ -92,7 +95,7 @@ E = Object.assign(this, {
     //"throw": (...a) => { throw(a[0]) },
 
     //"read":  (...a) => JSON.parse(a[0]),
-    //"slurp": (...a) => require('fs').readFileSync(a[0],'utf8'),
+    //"slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
     //"load":  (...a) => EVAL(JSON.parse(E["slurp"](a[0])),E),
 })
 

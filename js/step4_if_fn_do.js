@@ -31,6 +31,10 @@ function EVAL(ast, env) {
     // apply
     if (ast[0] == "def") {        // update current environment
         return env[ast[1]] = EVAL(ast[2], env)
+    } else if (ast[0] == "fn") {  // define new function (lambda)
+        return function(...a) {
+            return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
+        }
     } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env)
         for (let i in ast[1]) {
@@ -46,10 +50,6 @@ function EVAL(ast, env) {
             return EVAL(ast[2],env);
         } else {
             return EVAL(ast[3],env);
-        }
-    } else if (ast[0] == "fn") {  // define new function (lambda)
-        return function(...a) {
-            return EVAL(ast[2], eval_ast_or_bind(ast[1], env, a))
         }
     } else {                      // invoke list form
         let el = eval_ast_or_bind(ast, env),
