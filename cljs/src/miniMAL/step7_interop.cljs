@@ -1,4 +1,4 @@
-(ns miniMAL.step6-file
+(ns miniMAL.step7-interop
   (:require [clojure.string :refer [replace]]))
 
 (defn new-env [& [d B E]]
@@ -33,6 +33,10 @@
                     (swap! env assoc b (EVAL v env)))
                   (recur a2 env))
           "`" a1
+          ".-" (let [[o k & [v]] (eval-ast (rest ast) env)]
+                 (if v (aset o k v) (aget o k)))
+          "." (let [[o & el] (eval-ast (rest ast) env)]
+                (apply (get o (first el)) (rest el)))
           "do" (do (eval-ast (->> ast drop-last rest) env)
                    (recur (last ast) env))
           "if" (if (contains? #{0 nil false ""} (EVAL a1 env))
@@ -50,7 +54,8 @@
          (merge (into {} (map (fn [[k v]] [(replace k "_QMARK_" "?")
                                            (js->clj v)])
                               (js/Object.entries cljs.core)))
-                {"eval" #(EVAL %1 E)
+                {"js" js/eval
+                 "eval" #(EVAL %1 E)
 
                  "=" =
                  "<" <

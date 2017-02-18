@@ -9,15 +9,19 @@
         :else ast))
 
 (defn EVAL [ast env]
-  (if (not (array? ast))
+  ;(prn :EVAL :ast ast)
+  (if (not (or (array? ast) (seq? ast)))
     (eval-ast ast env)
     (let [[f & el] (eval-ast ast env)]
       (apply f el))))
 
-(def E {"+" + "-" - "*" * "/" /})
+(def E {"+" +
+        "-" -
+        "*" *
+        "/" /})
 
 (defn -main [& args]
   (let [efn #(%4 nil (js/JSON.stringify (EVAL (js/JSON.parse %1) E)))]
     (.start
       (js/require "repl")
-      (clj->js {:eval efn :writer identity :terminal false}))))
+      (clj->js {:eval efn :writer identity :terminal 0}))))

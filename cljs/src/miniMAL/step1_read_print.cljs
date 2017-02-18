@@ -7,4 +7,4 @@
   (let [efn #(%4 nil (js/JSON.stringify (EVAL (js/JSON.parse %1) {})))]
     (.start
       (js/require "repl")
-      (clj->js {:eval efn :writer identity :terminal false}))))
+      (clj->js {:eval efn :writer identity :terminal 0}))))

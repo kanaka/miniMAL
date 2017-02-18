@@ -1,4 +1,4 @@
-(ns miniMAL.step6-file
+(ns miniMAL.step8-macros
   (:require [clojure.string :refer [replace]]))
 
 (defn new-env [& [d B E]]
@@ -25,32 +25,46 @@
     ;(prn :EVAL :ast ast)
     (if (not (or (array? ast) (seq? ast)))
       (eval-ast ast env)
-      (let [[a0 a1 a2 a3] ast]
-        (condp = a0
-          "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
-          "let" (let [env (new-env @env)]
-                  (doseq [[b v] (partition 2 a1)]
-                    (swap! env assoc b (EVAL v env)))
-                  (recur a2 env))
-          "`" a1
-          "do" (do (eval-ast (->> ast drop-last rest) env)
-                   (recur (last ast) env))
-          "if" (if (contains? #{0 nil false ""} (EVAL a1 env))
-                 (recur a3 env)
-                 (recur a2 env))
-          "fn" (with-meta #(EVAL a2 (new-env @env a1 %&))
-                          [a2 env a1])
-          (let [[f & el] (eval-ast ast env)
-                [ast env p] (meta f)]
-            (if ast
-              (recur ast (new-env @env p el))
-              (apply f el))))))))
+      ;; inlined macroexpand
+      (let [ast (loop [ast ast]
+                  (if (and (or (array? ast) (seq? ast))
+                           (:M (meta (get @env (first ast)))))
+                    (recur (apply (get @env (first ast)) (rest ast)))
+                    ast))]
+        (if (not (or (array? ast) (seq? ast)))
+          (eval-ast ast env)
+          (let [[a0 a1 a2 a3] ast]
+            (condp = a0
+              "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
+              "~" (with-meta (EVAL a1 env) {:M true})
+              "let" (let [env (new-env @env)]
+                      (doseq [[b v] (partition 2 a1)]
+                        (swap! env assoc b (EVAL v env)))
+                      (recur a2 env))
+              "`" a1
+              ".-" (let [[o k & [v]] (eval-ast (rest ast) env)]
+                     (if v (aset o k v) (aget o k)))
+              "." (let [[o & el] (eval-ast (rest ast) env)]
+                    (apply (get o (first el)) (rest el)))
+              "do" (do (eval-ast (->> ast drop-last rest) env)
+                       (recur (last ast) env))
+              "if" (if (contains? #{0 nil false ""} (EVAL a1 env))
+                     (recur a3 env)
+                     (recur a2 env))
+              "fn" (with-meta #(EVAL a2 (new-env @env a1 %&))
+                              [a2 env a1])
+              (let [[f & el] (eval-ast ast env)
+                    [ast env p] (meta f)]
+                (if ast
+                  (recur ast (new-env @env p el))
+                  (apply f el))))))))))
 
 (def E (new-env
          (merge (into {} (map (fn [[k v]] [(replace k "_QMARK_" "?")
                                            (js->clj v)])
                               (js/Object.entries cljs.core)))
-                {"eval" #(EVAL %1 E)
+                {"js" js/eval
+                 "eval" #(EVAL %1 E)
 
                  "=" =
                  "<" <

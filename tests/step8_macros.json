@@ -126,7 +126,7 @@
 ;;;[-> [list 7 8 9] rest [rest] first [+ 7]]
 ;;;;=>16
 
-;; Testing EVAL in let*
+;; Testing EVAL in let
 
-["let", ["x", ["or", null, "yes"]], "x"]
+["let", ["x", ["or", null, ["`", "yes"]]], "x"]
 ;=>"yes"
