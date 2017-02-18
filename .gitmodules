@@ -1,6 +1,6 @@
 [submodule "RegPack"]
 	path = js/RegPack
-	url = https://github.com/kanaka/RegPack
+	url = https://github.com/Siorki/RegPack
 [submodule "js/UglifyJS2"]
 	path = js/UglifyJS2
 	url = https://github.com/mishoo/UglifyJS2

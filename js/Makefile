@@ -43,7 +43,7 @@ RegPack/node_modules/minimist:
 	cd RegPack && npm install
 
 %-regpack.js: %-uglify.js RegPack/node_modules/minimist
-	node ./RegPack/regPack.js $(REGPACK_OPTS) $< | tr -d '\n' > $@
+	node ./RegPack/bin/regpack $(REGPACK_OPTS) $< | tr -d '\n' > $@
 
 regpack^%: %-regpack.js
 	@true

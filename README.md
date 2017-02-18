@@ -235,5 +235,5 @@ a "full-fledged" Lisp in its own right.
 ### License
 
 miniMAL is licensed under the [MPL 2.0](http://www.mozilla.org/MPL/2.0/) (Mozilla Public License 2.0).
-See LICENSE.txt for more details.
+See LICENSE for more details.
 
