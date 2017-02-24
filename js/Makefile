@@ -68,7 +68,7 @@ web/miniMAL-min.js: miniMAL-min.js
 	cp $< $@
 
 web/miniMAL-core.js: core.json
-	echo -n "var core_ns =" > $@
+	echo -n "core_ns =" > $@
 	cat $< >> $@
 	UglifyJS2/bin/uglifyjs -r core_ns $@ $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
 	node ./RegPack/bin/regpack $(REGPACK_OPTS) $@.tmp > $@
