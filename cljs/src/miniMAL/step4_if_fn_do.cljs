@@ -27,8 +27,8 @@
       (condp = a0
         "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
         "let" (let [env (new-env @env)]
-                (doseq [[b v] (partition 2 a1)]
-                  (swap! env assoc b (EVAL v env)))
+                (doseq [[s v] (partition 2 a1)]
+                  (swap! env assoc s (EVAL v env)))
                 (EVAL a2 env))
         "do" (last (eval-ast (rest ast) env))
         "if" (if (contains? #{0 nil false ""} (EVAL a1 env))
@@ -39,16 +39,9 @@
           (apply f el))))))
 
 (def E (new-env
-         (merge (into {} (map (fn [[k v]] [(replace k "_QMARK_" "?")
-                                           (js->clj v)])
-                              (js/Object.entries cljs.core)))
-                {"=" =
-                 "<" <
-                 "+" +
-                 "-" -
-                 "*" *
-                 "/" /
-                 "list" array
+         (merge (into {} (for [[k v] (js->clj cljs.core)]
+                           [(demunge k) v]))
+                {"list" array
                  "print" #(js/JSON.stringify
                             % (fn [k v] (cond (fn? v) nil
                                               (seq? v) (apply array v)

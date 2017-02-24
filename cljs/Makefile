@@ -12,8 +12,18 @@ src/miniMAL/miniMAL.cljs: src/miniMAL/stepA_miniMAL.cljs
 	    | sed 's/^ *//' \
 	    | tr '\n' ' ' \
 	    | sed 's/  *(/(/g' \
+	    | sed 's/)  */)/g' \
 	    | sed 's/  *"/"/g' \
-	    | sed 's/  *\[/[/g' | sed 's/stepA-miniMAL/miniMAL/' \
+	    | sed 's/  *\[/[/g' \
+	    | sed 's/]  */]/g' \
+	    | sed 's/"  *\([^n]\)/"\1/g' \
+	    | sed 's/\<ast\>/A/g' \
+	    | sed 's/\<env\>/E/g' \
+	    | sed 's/\<a0\>/a/g' \
+	    | sed 's/\<a1\>/b/g' \
+	    | sed 's/\<a2\>/c/g' \
+	    | sed 's/\<a3\>/d/g' \
+	    | sed 's/stepA-miniMAL/miniMAL/' \
 	    | sed 's/\<EVAL\>/X/g' \
 	    | sed 's/\<eval-ast\>/Y/g' \
 	    | sed 's/\<new-env\>/Z/g' \
@@ -24,8 +34,6 @@ miniMAL: src/miniMAL/miniMAL.cljs
 	@cat $< \
 	    | sed "s/(ns.*:require\([^)]*)\))/(require \'\1/" \
 	    | sed 's/defn -main\[& args\]/let [args (seq (.slice js\/process.argv 4))]/' \
-	    | sed 's/\<ast\>/a/g' \
-	    | sed 's/\<env\>/e/g' \
 	    >> $@
 	@chmod +x $@
 

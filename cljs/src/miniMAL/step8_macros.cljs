@@ -38,8 +38,8 @@
               "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
               "~" (with-meta (EVAL a1 env) {:M true})
               "let" (let [env (new-env @env)]
-                      (doseq [[b v] (partition 2 a1)]
-                        (swap! env assoc b (EVAL v env)))
+                      (doseq [[s v] (partition 2 a1)]
+                        (swap! env assoc s (EVAL v env)))
                       (recur a2 env))
               "`" a1
               ".-" (let [[o k & [v]] (eval-ast (rest ast) env)]
@@ -60,18 +60,11 @@
                   (apply f el))))))))))
 
 (def E (new-env
-         (merge (into {} (map (fn [[k v]] [(replace k "_QMARK_" "?")
-                                           (js->clj v)])
-                              (js/Object.entries cljs.core)))
+         (merge (into {} (for [[k v] (js->clj cljs.core)]
+                           [(demunge k) v]))
                 {"js" js/eval
                  "eval" #(EVAL %1 E)
 
-                 "=" =
-                 "<" <
-                 "+" +
-                 "-" -
-                 "*" *
-                 "/" /
                  "list" array
 
                  "read" #(js/JSON.parse %)

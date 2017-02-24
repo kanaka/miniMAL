@@ -58,9 +58,9 @@
 ["def", "set", ["fn", ["a", "b", "c"],
   ["do", ["aset", "a", "b", "c"], "a"]]],
 ["def", "keys", ["fn", ["a"],
-  ["apply", "array", ["clj-keys", ["js__GT_clj", "a"]]]]],
+  ["apply", "array", ["clj-keys", ["js->clj", "a"]]]]],
 ["def", "vals", ["fn", ["a"],
-  ["apply", "array", ["clj-vals", ["js__GT_clj", "a"]]]]],
+  ["apply", "array", ["clj-vals", ["js->clj", "a"]]]]],
 
 ["def", "and", ["~", ["fn", ["&", "xs"],
   ["if", ["empty?", "xs"],

@@ -18,8 +18,8 @@
       (condp = a0
         "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
         "let" (let [env (new-env @env)]
-                (doseq [[b v] (partition 2 a1)]
-                  (swap! env assoc b (EVAL v env)))
+                (doseq [[s v] (partition 2 a1)]
+                  (swap! env assoc s (EVAL v env)))
                 (EVAL a2 env))
         (let [[f & el] (eval-ast ast env)]
           (apply f el))))))

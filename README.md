@@ -4,7 +4,7 @@ A Delightfully Dimuntive Lisp.
 
 The miniMAL core interpreter is implemented in less than 1024 bytes of
 JavaScript (uglify/regpack). There is also an implementation of
-miniMAL in python (1.4K as a pyz file) and ClojureScript (2K after
+miniMAL in python (1.4K as a pyz file) and ClojureScript (1.8K after
 minification).
 
 The design of miniMAL started with

@@ -145,7 +145,7 @@ if __name__ == "__main__":
             pass
         sys.exit(0)
 
-    print("miniMAL 1.0.2")
+    print("miniMAL 1.0.3")
     while True:
         try:
             line = input("> ")
