@@ -2,10 +2,11 @@ STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
         step6_file step7_interop step8_macros step9_try stepA_miniMAL \
         stepB_web stepB_node stepB_js1k
 
+WEB_FILES = web/miniMAL-min.js web/miniMAL-core.js
+
 .SECONDARY:
 
-all: miniMAL-js1k.js miniMAL-node.js miniMAL-min.js \
-     web/miniMAL-min.js web/miniMAL-core.js
+all: miniMAL-js1k.js miniMAL-node.js miniMAL-min.js $(WEB_FILES)
 
 #
 # Uglify
@@ -70,7 +71,7 @@ web/miniMAL-core.js: core.json
 	echo -n "var core_ns =" > $@
 	cat $< >> $@
 	UglifyJS2/bin/uglifyjs -r core_ns $@ $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
-	node ./RegPack/regPack.js $(REGPACK_OPTS) $@.tmp > $@
+	node ./RegPack/bin/regpack $(REGPACK_OPTS) $@.tmp > $@
 	rm $@.tmp
 
 miniMAL-js1k.js: stepB_js1k-regpack.js
@@ -88,8 +89,10 @@ miniMAL-node.js: stepB_node-regpack.js
 .PHONY: crush regpack stats stats-full clean
 crush: $(foreach s,$(STEPS),crush^$(s))
 regpack: $(foreach s,$(STEPS),regpack^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s))
-stats-full: $(foreach s,$(STEPS),stats-full^$(s))
+stats: $(foreach s,$(STEPS),stats^$(s)) $(WEB_FILES)
+	@wc $(WEB_FILES) | grep -v "total"
+stats-full: $(foreach s,$(STEPS),stats-full^$(s)) $(WEB_FILES)
+	@wc $(WEB_FILES) | grep -v "total"
 
 clean:
-	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64
+	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64 $(WEB_FILES)

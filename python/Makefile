@@ -1,9 +1,11 @@
 STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
         step6_file step7_interop step8_macros step9_try stepA_miniMAL
 
+MIN_FILES = miniMAL.py miniMAL.pyz
+
 .SECONDARY:
 
-all: miniMAL.py miniMAL.pyz
+all: $(MIN_FILES)
 
 # Library
 miniMAL.py: stepA_miniMAL.py
@@ -47,9 +49,11 @@ stats-full^%: %.py %-minipy.py %.pyz
 
 .PHONY: minipy stats clean
 minipy: $(foreach s,$(STEPS),minipy^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s))
-stats-full: $(foreach s,$(STEPS),stats-full^$(s))
+stats: $(foreach s,$(STEPS),stats^$(s)) $(MIN_FILES)
+	@wc $(MIN_FILES) | grep -v "total"
+stats-full: $(foreach s,$(STEPS),stats-full^$(s)) $(MIN_FILES)
+	@wc $(MIN_FILES) | grep -v "total"
 
 
 clean:
-	rm -f *-minipy.py *.pyz miniMAL.py miniMAL.pyz
+	rm -f *-minipy.py *.pyz $(MIN_FILES)

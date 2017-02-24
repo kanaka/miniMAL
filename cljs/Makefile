@@ -2,8 +2,9 @@ STEPS = step1_read_print step2_eval step3_env step4_if_fn_do \
 	step5_tco step6_file step7_interop step8_macros \
 	step9_try stepA_miniMAL
 
+MIN_FILES = src/miniMAL/miniMAL.cljs miniMAL
 
-all: src/miniMAL/miniMAL.cljs miniMAL
+all: $(MIN_FILES)
 
 src/miniMAL/miniMAL.cljs: src/miniMAL/stepA_miniMAL.cljs
 	@cat $< \
@@ -31,8 +32,8 @@ miniMAL: src/miniMAL/miniMAL.cljs
 
 .PHONY: clean
 
-stats: $(foreach S,$(STEPS),src/miniMAL/$(S).cljs) src/miniMAL/miniMAL.cljs miniMAL
+stats: $(foreach S,$(STEPS),src/miniMAL/$(S).cljs) $(MIN_FILES)
 	@wc $^ | grep -v "total"
 
 clean:
-	rm -f src/miniMAL/miniMAL.cljs miniMAL
+	rm -f $(MIN_FILES)
