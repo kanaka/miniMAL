@@ -66,7 +66,7 @@ sudo npm install minimal-lisp
   evaluate miniMAL source code in a regular Node.js program.
 ```javascript
 var miniMAL = require('minimal-lisp'),
-    m = miniMAL();
+    m = miniMAL(global);
 m.eval(["+", 2, 3]);
 ```
 
