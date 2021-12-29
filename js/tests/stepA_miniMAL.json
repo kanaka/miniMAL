@@ -3,15 +3,17 @@
 
 ;;
 ;; Testing new
-["def", "b", ["new", "Buffer", ["list", 7, 8, 9]]]
-["count", "b"]
-;=>3
-["get", "b", 1]
-8
 ["def", "o", ["new", "Object"]]
 ;=>{}
 ["def", "f", ["new", ["fn", [], null]]]
 ;=>{}
+;;
+;; Testing method invocation
+["def", "b", [".", "Buffer", ["`", "from"], ["list", 7, 8, 9]]]
+["count", "b"]
+;=>3
+["get", "b", 1]
+8
 
 ;;
 ;; Testing isa

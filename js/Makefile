@@ -11,19 +11,22 @@ all: miniMAL-js1k.js miniMAL-node.js miniMAL-min.js $(WEB_FILES)
 #
 # Uglify
 #
-UGLIFY_OPTS=-c hoist_funs=true,unsafe=true,keep_fargs=true,pure_getters=true,screw-ie8=true,unused=false -m -e
+UGLIFY = node_modules/.bin/uglifyjs
+UGLIFY_OPTS=-c hoist_funs=true,unsafe=true,keep_fargs=true,pure_getters=true,unused=false -e -m
 
+REGPACK = node_modules/.bin/regpack
 REGPACK_OPTS=--crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor=1
+# This compresses js1k better but results in an error on load
 #REGPACK_OPTS=--crushGainFactor 1 --crushLengthFactor 0 --crushCopiesFactor 0 --crushTiebreakerFactor=1
 
 node_modules/uglify-js:
 	npm install
 
 %-uglify-pretty.js: %.js node_modules/uglify-js
-	UglifyJS2/bin/uglifyjs $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"string"/typeof ""/g' > $@
+	$(UGLIFY) $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"object"/ typeof {}/g' | sed 's/"string"/ typeof ""/g' > $@
 
 %-uglify.js: %.js node_modules/uglify-js
-	UglifyJS2/bin/uglifyjs $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"string"/typeof ""/g' > $@
+	$(UGLIFY) $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"object"/ typeof {}/g' | sed 's/"string"/ typeof ""/g' > $@
 
 #
 # JsCrush
@@ -40,11 +43,11 @@ crush^%: %-crush.js
 #
 # RegPack
 #
-RegPack/node_modules/minimist:
-	cd RegPack && npm install
+node_modules/regpack:
+	npm install
 
-%-regpack.js: %-uglify.js RegPack/node_modules/minimist
-	node ./RegPack/bin/regpack $(REGPACK_OPTS) $< | tr -d '\n' > $@
+%-regpack.js: %-uglify.js node_modules/regpack
+	$(REGPACK) $(REGPACK_OPTS) $< | tr -d '\n' > $@
 
 regpack^%: %-regpack.js
 	@true
@@ -70,8 +73,9 @@ web/miniMAL-min.js: miniMAL-min.js
 web/miniMAL-core.js: core.json
 	echo -n "core_ns =" > $@
 	cat $< >> $@
-	UglifyJS2/bin/uglifyjs -r core_ns $@ $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
-	node ./RegPack/bin/regpack $(REGPACK_OPTS) $@.tmp > $@
+	#$(UGLIFY) -r core_ns $@ $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
+	$(UGLIFY) $@ $(UGLIFY_OPTS) reserved=['core_ns'] | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
+	$(REGPACK) $(REGPACK_OPTS) $@.tmp > $@
 	rm $@.tmp
 
 miniMAL-js1k.js: stepB_js1k-regpack.js
@@ -89,10 +93,10 @@ miniMAL-node.js: stepB_node-regpack.js
 .PHONY: crush regpack stats stats-full clean
 crush: $(foreach s,$(STEPS),crush^$(s))
 regpack: $(foreach s,$(STEPS),regpack^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s)) $(WEB_FILES)
-	@wc $(WEB_FILES) | grep -v "total"
-stats-full: $(foreach s,$(STEPS),stats-full^$(s)) $(WEB_FILES)
-	@wc $(WEB_FILES) | grep -v "total"
+stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(WEB_FILES)
+	@wc core.json $(WEB_FILES) | grep -v "total"
+stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(WEB_FILES)
+	@wc core.json $(WEB_FILES) | grep -v "total"
 
 clean:
 	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64 $(WEB_FILES)

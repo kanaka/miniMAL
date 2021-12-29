@@ -1,8 +1,28 @@
 {
     "name": "minimal-lisp",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "description": "miniMAL: a Clojure-inspired Lisp in < 1024 bytes of JavaScript",
-    "keywords": ["Clojure", "clojure", "Lisp", "lisp", "mal", "make-a-lisp", "1K", "1024", "golf", "JS1K", "js1k", "JSON", "json", "tail-call", "TCO", "macros", "interop", "lexical", "functional"],
+    "keywords": [
+        "Clojure",
+        "clojure",
+        "Lisp",
+        "lisp",
+        "mal",
+        "make-a-lisp",
+        "1K",
+        "1024",
+        "golf",
+        "JS1K",
+        "js1k",
+        "JSON",
+        "json",
+        "tail-call",
+        "TCO",
+        "macros",
+        "interop",
+        "lexical",
+        "functional"
+    ],
     "homepage": "http://kanaka.github.io/miniMAL",
     "repository": {
         "type": "git",
@@ -10,7 +30,9 @@
     },
     "license": "MPL-2.0",
     "main": "miniMAL-node.js",
-    "bin": { "miniMAL": "./miniMAL" },
+    "bin": {
+        "miniMAL": "./miniMAL"
+    },
     "files": [
         "miniMAL",
         "miniMAL-node.js",
@@ -22,7 +44,11 @@
         "web/"
     ],
     "devDependencies": {
-        "uglify-js": "2.7.5",
-        "jscrush": "0.0.0"
+        "jscrush": "0.0.0",
+        "source-map": "0.7.3",
+        "uglify-js": "3.14.5",
+        "regpack": "5.0.1",
+        "yargs": "^17.3.1",
+        "async": "^3.2.2"
     }
 }
