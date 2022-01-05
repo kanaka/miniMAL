@@ -152,6 +152,17 @@
 ["fib", 10]
 ;=>89
 
+;; Testing variable length arguments
+[ ["fn", ["&", "args"], "args"], 1]
+;=>[1]
+[ ["fn", ["&", "args"], "args"], 1, 2, 3]
+;=>[1,2,3]
+[ ["fn", ["&", "args"], "args"] ]
+;=>[]
+[ ["fn", ["a", "&", "args"], "a"], 1, 2, 3]
+;=>1
+[ ["fn", ["a", "&", "args"], "args"], 1]
+;=>[]
 
 ;;
 ;; See step7 tests for string quoting tests

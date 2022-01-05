@@ -1,0 +1,4 @@
+;; Evaluation object literal values
+{"a": ["+", 7, 8]}
+;=>{"a":15}
+
