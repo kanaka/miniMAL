@@ -70,6 +70,7 @@ IMPLS = js python cljs
 
 EXTENSION = .json
 
+step0 = step0_repl
 step1 = step1_read_print
 step2 = step2_eval
 step3 = step3_env
