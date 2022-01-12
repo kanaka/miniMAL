@@ -36,7 +36,7 @@ function EVAL(ast, env, seq, f, el) {
       // apply
       if (ast[0] == "def") {        // update current environment
         return env[ast[1]] = EVAL(ast[2], env)
-      } else if (ast[0] == "~") {  // mark as macro
+      } else if (ast[0] == "~") {   // mark as macro
         return Object.assign(EVAL(ast[1], env), {M: 1}) // mark as macro
       } else if (ast[0] == "`") {   // quote (unevaluated)
         return ast[1]
@@ -60,7 +60,7 @@ function EVAL(ast, env, seq, f, el) {
         }, {A: [ast[2], env, ast[1]]})
   
       // TCO cases
-      } else if (ast[0] == "let") {        // new environment with bindings
+      } else if (ast[0] == "let") { // new environment with bindings
         env = Object.create(env)
         ast[1].map((e,i) => i%2 ? env[ast[1][i-1]] = EVAL(ast[1][i], env) : 0)
         ast = ast[2]
@@ -87,7 +87,7 @@ function EVAL(ast, env, seq, f, el) {
   }
 }
 
-let E = Object.assign(this, {
+E = Object.assign(this, {
   "js":    eval,
   "eval":  (...a) => EVAL(a[0], E),
 
@@ -116,12 +116,11 @@ let E = Object.assign(this, {
 
 // Node specific
 if (process.argv[2]) {
-  E.load(process.argv[2])
+  return E.load(process.argv[2])
 } else {
   require("repl").start({
     eval:     (...a) => a[3](0,EVAL(JSON.parse(a[0]),E)),
-    writer:   JSON.stringify,
-    terminal: 0})
+    writer:   JSON.stringify})
 }
 
 }()

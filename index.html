@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2014 Joel Martin
+Copyright (c) 2022 Joel Martin
 Copyright (c) 2012 Fogus, Jen Myers and Relevance Inc.
 All rights reserved. The use and distribution terms for this software
 are covered by the Eclipse Public License 1.0
@@ -31,13 +31,13 @@ this software.
     <div id="console-container" class="sixteen columns">
     <div class="console" id="console"></div>
     </div>
-    <div class="eight columns" style="font-family: monospace">
-      miniMAL: &nbsp;<a href="js/web/miniMAL-min.js">min</a> (&nbsp;932 bytes),
-       <a href="js/stepB_web.js">orig</a> (4460 bytes)<br>
-      Core Lib: <a href="js/web/miniMAL-core.js">min</a> (1012 bytes),
-       <a href="js/core.json">orig</a> (4278 bytes)
+    <div class="eleven columns" style="font-family: monospace">
+      miniMAL: &nbsp;<a href="js/web/miniMAL-min.js">min</a> (&nbsp;906 bytes),
+       <a href="js/stepB_web.js">orig</a> (3949 bytes, 118 lines)<br>
+      Core Lib: <a href="js/web/miniMAL-core.js">min</a> (1015 bytes),
+       <a href="js/core.json">orig</a> (4278 bytes, 125 lines)
     </div>
-    <div class="eight columns">
+    <div class="five columns">
       <div class="source">
         <a href="http://github.com/kanaka/miniMAL">View source on Github <img src="js/web/github-icon.png" /></a></p>
       </div><!-- /source -->
@@ -100,34 +100,41 @@ this software.
         </table>
       </div><!-- /cheat-box -->
       <div class="cheat-box">
-        <h4>JavaScript Interop</h4>
+        <h4>Core Library</h4>
         <table>
           <tr class="row-one">
-            <td class="row-label">Evaluate JavaScript</td>
-            <td>["js", ["`", "2 + 3"]]</td>
+            <td class="row-label">Math</td>
+            <td>"+", "-", "*", "/"</td>
           </tr>
           <tr>
-            <td class="row-label">Method call/access</td>
-            <td>[".", "Object",<br>
-                &nbsp;&nbsp;["`", "keys"], {"a": 1}]</td>
+            <td class="row-label">Conditional Macros</td>
+            <td>"and", "or"</td>
           </tr>
           <tr class="row-one">
-            <td class="row-label">Data Type</td>
-            <td>["classOf", 123]</td>
-          </tr>
-        </table>
-      </div><!-- /cheat-box -->
-      <div class="cheat-box">
-        <h4>Metaprogramming</h4>
-        <table>
-          <tr class="row-one">
-            <td class="row-label">Macros</td>
-            <td>["def","unless",["~",["fn",["p","a","b"],<br>
-                &nbsp;&nbsp;["list",["`","if"],"p","b","a"]]]]</td>
+            <td class="row-label">Comparison/Boolean</td>
+            <td>"=", "&lt;", "&gt;", "&lt;=", "&gt;=", "not"</td>
           </tr>
           <tr>
-            <td class="row-label">Eval</td>
-            <td>["eval",["`", ["+", 2,3]]]</td>
+            <td class="row-label">Predicates</td>
+            <td>"null?", "true?", "false?", "string?", "list?",
+                "contains?", "empty?"</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">List Functions</td>
+            <td>"map", "apply", "list", "cons", "concat", "nth",
+                "first", "last", "rest", "count", "empty?"</td>
+          </tr>
+          <tr>
+            <td class="row-label">Object Functions</td>
+            <td>"get", "set", "contains?", "keys", "vals"</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">String Functions</td>
+            <td>"str", "pr-str", "prn", "println"</td>
+          </tr>
+          <tr>
+            <td class="row-label">Other</td>
+            <td>"throw"</td>
           </tr>
         </table>
       </div><!-- /cheat-box -->
@@ -164,37 +171,65 @@ this software.
         </table>
       </div><!-- /cheat-box -->
       <div class="cheat-box">
-        <h4>Core Library</h4>
+        <h4>Metaprogramming</h4>
         <table>
           <tr class="row-one">
-            <td class="row-label">Math</td>
-            <td>"+", "-", "*", "/"</td>
+            <td class="row-label">Macros</td>
+            <td>["def","unless",["~",["fn",["p","a","b"],<br>
+                &nbsp;&nbsp;["list",["`","if"],"p","b","a"]]]]</td>
           </tr>
           <tr>
-            <td class="row-label">Conditional Macros</td>
-            <td>"and", "or"</td>
+            <td class="row-label">Read</td>
+            <td>["read",["`", "[\"+\", 2,3]"]]</td>
           </tr>
           <tr class="row-one">
-            <td class="row-label">Comparison/Boolean</td>
-            <td>"=", "&lt;", "&gt;", "&lt;=", "&gt;=", "not"</td>
+            <td class="row-label">Eval</td>
+            <td>["eval",["`", ["+", 2,3]]]</td>
+          </tr>
+        </table>
+      </div><!-- /cheat-box -->
+      <div class="cheat-box">
+        <h4>JavaScript Interop</h4>
+        <table>
+          <tr class="row-one">
+            <td class="row-label">Evaluate JavaScript</td>
+            <td>["js", ["`", "2 + 3"]]</td>
           </tr>
           <tr>
-            <td class="row-label">Predicates</td>
-            <td>"null?", "true?", "false?", "string?", "list?",
-                "contains?", "empty?"</td>
+            <td class="row-label">Method call</td>
+            <td>[".", "Object",<br>
+                &nbsp;&nbsp;["`", "keys"], {"a": 1}]</td>
           </tr>
           <tr class="row-one">
-            <td class="row-label">List Functions</td>
-            <td>"apply", "list", "cons", "concat", "nth", "first",
-                "last", "rest", "count", "empty?"</td>
+            <td class="row-label">Get attribute</td>
+            <td>[".-", "Math", ["`", "PI"]]</td>
           </tr>
           <tr>
-            <td class="row-label">Object Functions</td>
-            <td>"get", "set", "contains?", "keys", "vals"</td>
+            <td class="row-label">Set attribute</td>
+            <td>[".-", "window",<br>
+                &nbsp;&nbsp;["`", "location"],<br>
+                &nbsp;&nbsp;["`", "http://github.com"]]</td>
           </tr>
           <tr class="row-one">
-            <td class="row-label">String Functions</td>
-            <td>"str", "pr-str", "prn", "println"</td>
+            <td class="row-label">Delete attribute</td>
+            <td>["del", "window",<br>
+                &nbsp;&nbsp;["`", "console"],<br>
+          </tr>
+          <tr>
+            <td class="row-label">JS Type</td>
+            <td>["type", 123]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">JS Class</td>
+            <td>["classOf", 123]</td>
+          </tr>
+          <tr>
+            <td class="row-label">Inheritance</td>
+            <td>["isa", {}, "Object"]</td>
+          </tr>
+          <tr class="row-one">
+            <td class="row-label">Instantiate Object</td>
+            <td>["new", "Array", 3]</td>
           </tr>
         </table>
       </div><!-- /cheat-box -->
@@ -203,7 +238,7 @@ this software.
     <div class="rule sixteen columns"></div>
 
     <div class="column footer-logo">
-        <div>miniMAL &copy; 2017 Joel Martin</div>
+        <div>miniMAL &copy; 2022 Joel Martin</div>
         <div>Himera design &copy; 2012-2013 <a ref="http://www.fogus.me">Fogus</a>, <a href="http://jenmyers.net/">Jen Myers</a> and <a href="http://www.thinkrelevance.com">Relevance Inc.</a></div>
     </div>
 
@@ -292,7 +327,7 @@ this software.
       })
 
       // Print out the banner
-      m.eval(["println", ["`", "miniMAL 1.0.3"]])
+      m.eval(["println", ["`", "miniMAL 1.1.0"]])
 
 
       //

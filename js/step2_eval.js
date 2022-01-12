@@ -2,8 +2,6 @@
 // Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
-!function() {
-
 function EVAL(ast, env, seq, f, el) {
     //console.log("EVAL:", ast)
     if (seq) {
@@ -16,11 +14,7 @@ function EVAL(ast, env, seq, f, el) {
           ? env[ast]                     // lookup symbol
           : null[ast]                    // undefined symbol
       } else {
-        return (typeof ast == "object")
-          ? ast
-            ? EVAL(ast, env, {})         // eval object values
-            : ast                        // return ast unchanged
-          : ast
+        return ast
       }
     } else {
       // apply
@@ -31,16 +25,13 @@ function EVAL(ast, env, seq, f, el) {
 }
 
 E = {
-    "+":     (...a) => a[0]+a[1],
-    "-":     (...a) => a[0]-a[1],
-    "*":     (...a) => a[0]*a[1],
-    "/":     (...a) => a[0]/a[1],
+  "+":     (...a) => a[0]+a[1],
+  "-":     (...a) => a[0]-a[1],
+  "*":     (...a) => a[0]*a[1],
+  "/":     (...a) => a[0]/a[1],
 }
 
 // Node specific
 require("repl").start({
     eval:     (...a) => a[3](0,EVAL(JSON.parse(a[0]),E)),
-    writer:   JSON.stringify,
-    terminal: 0})
-
-}()
+    writer:   JSON.stringify})

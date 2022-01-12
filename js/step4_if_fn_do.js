@@ -2,8 +2,6 @@
 // Copyright (C) 2017 Joel Martin
 // Licensed under MPL 2.0
 
-!function() {
-
 function new_env(ast, env, exprs) {
   // Return new Env with symbols in ast bound to
   // corresponding values in exprs
@@ -25,11 +23,7 @@ function EVAL(ast, env, seq, f, el) {
           ? env[ast]                     // lookup symbol
           : null[ast]                    // undefined symbol
       } else {
-        return (typeof ast == "object")
-          ? ast
-            ? EVAL(ast, env, {})         // eval object values
-            : ast                        // return ast unchanged
-          : ast
+        return ast
       }
     } else {
       // apply
@@ -55,21 +49,18 @@ function EVAL(ast, env, seq, f, el) {
     }
 }
 
-let E = Object.assign(this, {
-    "=":     (...a) => a[0]===a[1],
-    "<":     (...a) => a[0]<a[1],
-    "+":     (...a) => a[0]+a[1],
-    "-":     (...a) => a[0]-a[1],
-    "*":     (...a) => a[0]*a[1],
-    "/":     (...a) => a[0]/a[1],
-    "list":  (...a) => a,
-    "map":   (...a) => a[1].map(x => a[0](x)),
-})
+E = {
+  "=":     (...a) => a[0]===a[1],
+  "<":     (...a) => a[0]<a[1],
+  "+":     (...a) => a[0]+a[1],
+  "-":     (...a) => a[0]-a[1],
+  "*":     (...a) => a[0]*a[1],
+  "/":     (...a) => a[0]/a[1],
+  "list":  (...a) => a,
+  "map":   (...a) => a[1].map(x => a[0](x)),
+}
 
 // Node specific
 require("repl").start({
     eval:     (...a) => a[3](0,EVAL(JSON.parse(a[0]),E)),
-    writer:   JSON.stringify,
-    terminal: 0})
-
-}()
+    writer:   JSON.stringify})
