@@ -1,31 +1,31 @@
 #!/usr/bin/env python3
 # miniMAL
-# Copyright (C) 2017 Joel Martin
+# Copyright (C) 2022 Joel Martin
 # Licensed under MPL 2.0
 
-import sys, traceback, readline
+import sys, readline
 from json import loads, dumps
 
-def eval_ast(ast, env):
-    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == str: return env[ast]
-    else:                  return ast
+def throw(a): raise Exception(a)
 
 def EVAL(ast, env):
-    if type(ast) != list: return eval_ast(ast, env)
+    #print("EVAL ast: %s" % ast)
+    # eval
+    if type(ast) != list:
+        return env[ast] if type(ast) == str else ast
 
     # apply
-    el = eval_ast(ast, env)
-    fn = el[0]
-    return fn(*el[1:])
+    else:
+        el = [EVAL(a, env) for a in ast]
+        fn = el[0]
+        return fn(*el[1:])
 
-repl_env = {'+': lambda a,b: a+b,
-            '-': lambda a,b: a-b,
-            '*': lambda a,b: a*b,
-            '/': lambda a,b: int(a/b)}
-
-def rep(line):
-    return dumps(EVAL(loads(line), repl_env), separators=(',', ':'))
+E = {
+    '+':         lambda a,b: a+b,
+    '-':         lambda a,b: a-b,
+    '*':         lambda a,b: a*b,
+    '/':         lambda a,b: int(a/b),
+    }
 
 if __name__ == "__main__":
     while True:
@@ -35,8 +35,9 @@ if __name__ == "__main__":
         except EOFError:
             break
         try:
-            print("%s" % rep(line))
-        except ValueError as e:
-            print("%s" % e.args[0])
-        except Exception:
-            print("".join(traceback.format_exception(*sys.exc_info())))
+            print("%s" % dumps(EVAL(loads(line), E), separators=(',', ':')))
+        except Exception as e:
+            print(repr(e))
+        #import traceback
+        #except Exception:
+        #    print("".join(traceback.format_exception(*sys.exc_info())))

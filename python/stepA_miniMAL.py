@@ -1,151 +1,105 @@
 #!/usr/bin/env python3
 # miniMAL
-# Copyright (C) 2017 Joel Martin
+# Copyright (C) 2022 Joel Martin
 # Licensed under MPL 2.0
 
-import sys, traceback, readline
+import sys, readline, builtins
 from json import loads, dumps
 
-def throw(a):
-    raise Exception(a)
+def throw(a): raise Exception(a)
 
-def Env(outer=object, binds=[], exprs=[], data=None):
-    data = data or {}
-    for ix in range(len(binds)):
-        if binds[ix] == "&":
-            data[binds[ix+1]] = exprs[ix:]
+def Env(outer=object, binds=[], exprs=[], d=None):
+    d = d or {}
+    for i in range(len(binds)):
+        if binds[i] == "&":
+            d[binds[i+1]] = exprs[i:]
             break
         else:
-            data[binds[ix]] = exprs[ix]
-    return type("Env", (outer,), data or {})
-
-def macroexpand(ast, env):
-    while (type(ast) == list
-           and type(ast[0]) == str
-           and hasattr(env, ast[0])
-           and getattr(getattr(env, ast[0]), 'ismacro', None)):
-        ast = getattr(env, ast[0])(*ast[1:])
-    return ast
-
-def eval_ast(ast, env):
-    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == str:
-        if not hasattr(env, ast): throw(ast + " not found")
-        return getattr(env, ast)
-    else:                  return ast
+            d[binds[i]] = exprs[i]
+    return type("Env", (outer,), d)
 
 def EVAL(ast, env):
   while True:
     #print("EVAL ast: %s" % ast)
-    if type(ast) != list: return eval_ast(ast, env)
+    # eval
+    if type(ast) != list:
+        if type(ast) == dict: return {k: EVAL(v, env) for k, v in ast.items()}
+        return getattr(env, ast) if type(ast) == str else ast
 
     # apply
-    ast = macroexpand(ast, env)
-    if type(ast) != list: return ast
-
-    if "def" == ast[0]:
+    elif "def" == ast[0]:
         setattr(env, ast[1], EVAL(ast[2], env))
         return getattr(env, ast[1])
     elif "~" == ast[0]: # mark as macro
         fn = EVAL(ast[1], env)
-        fn.ismacro = True
+        fn.M = 1
         return fn
     elif "let" == ast[0]:
         env = Env(env)
-        for ix in range(0, len(ast[1]), 2):
-            setattr(env, ast[1][ix], EVAL(ast[1][ix+1], env))
+        for i in range(0, len(ast[1]), 2):
+            setattr(env, ast[1][i], EVAL(ast[1][i+1], env))
         ast = ast[2]  # TCO
     elif "`" == ast[0]:
         return ast[1]
     elif ".-" == ast[0]:
-        el = eval_ast(ast[1:], env)
+        el = [EVAL(a, env) for a in ast[1:]]
         if len(el) > 2:
             setattr(el[0], el[1], el[2])
-            return el[2]
-        else:
-            return getattr(el[0], el[1])
-    elif "." == ast[0]:
-        el = eval_ast(ast[1:], env)
-        fn = getattr(el[0], el[1])
-        return fn(el[0], *el[2:])
+        return getattr(el[0], el[1])
     elif "try" == ast[0]:
-        a1, a2 = ast[1], ast[2]
-        if a2[0] == "catch":
-            try:
-                return EVAL(a1, env);
-            except Exception as exc:
-                return EVAL(a2[2], Env(env, [a2[1]], [exc.args[0]]))
-        else:
-            return EVAL(a1, env);
+        try:
+            return EVAL(ast[1], env)
+        except Exception as exc:
+            return EVAL(ast[2][2], Env(env, [ast[2][1]], [exc.args[0]]))
     elif "do" == ast[0]:
-        eval_ast(ast[1:-1], env)
+        [EVAL(a, env) for a in ast[1:-1]]
         ast = ast[-1]  # TCO
     elif "if" == ast[0]:
-        if EVAL(ast[1], env):
-            ast = ast[2]  # TCO
-        else:
-            ast = ast[3]  # TCO
+        ast = ast[2] if EVAL(ast[1], env) else ast[3] # TCO
     elif "fn" == ast[0]:
-        fn = lambda *args: EVAL(ast[2], Env(env, ast[1], list(args)))
-        fn.ast = ast[2]
-        fn.env = env
-        fn.params = ast[1]
+        fn = lambda *a: EVAL(ast[2], Env(env, ast[1], [*a]))
+        fn.A = [ast[2], env, ast[1]]
         return fn
     else:
-        el = eval_ast(ast, env)
-        fn = el[0]
-        if hasattr(fn, 'ast'):
-            ast = fn.ast;
-            env = Env(fn.env, fn.params, el[1:])
+        fn = EVAL(ast[0], env)
+        if hasattr(fn, "M"):
+            ast = fn(*ast[1:]) # TCO
         else:
-            return fn(*el[1:])
+            el = [EVAL(a, env) for a in ast[1:]]
+            if hasattr(fn, 'A'):
+                ast = fn.A[0]
+                env = Env(fn.A[1], fn.A[2], el) # TCO
+            else:
+                return fn(*el)
 
-def PRINT(o):
-    return dumps(o, separators=(',', ':'), default=lambda o: None)
-
-import builtins
-repl_env = Env(outer=Env(data=builtins.__dict__), data={
+E = Env(d={**builtins.__dict__,
     'py':        eval,
-    'eval':      lambda a: EVAL(a, repl_env),
+    'eval':      lambda a: EVAL(a, E),
 
     '=':         lambda a,b: a==b,
     '<':         lambda a,b: a<b,
-    '<=':        lambda a,b: a<=b,
-    '>':         lambda a,b: a>b,
-    '>=':        lambda a,b: a>=b,
     '+':         lambda a,b: a+b,
     '-':         lambda a,b: a-b,
     '*':         lambda a,b: a*b,
     '/':         lambda a,b: int(a/b),
-    'list':      lambda *a: list(a),
-    'get':       lambda a,b: a[b],
-    'set':       lambda a,b,c: a.__setitem__(b, c) or a,
-    'map':       lambda a,b: list(map(a,b)),
+    'list':      lambda *a: [*a],
+    #'map':       lambda a,b: list(map(a,b)),
     'apply':     lambda a,b: a(*b),
     'throw':     throw,
 
-    'readline':  input,
     'read':      loads,
-    'pr-str*':   PRINT,
-    'slurp':     lambda a: open(a).read(),
-    'load':      lambda a: EVAL(loads(open(a).read()),repl_env),
-    'typeof':    lambda a: type(a).__name__,
+    'pr*':       lambda a: dumps(a, separators=(',', ':')),
+    'load':      lambda a: EVAL(loads(open(a).read()),E),
 
-    'ARGS': sys.argv[2:]
+    'ARGS':      sys.argv[2:]
     })
-
-def rep(line):
-    return PRINT(EVAL(loads(line), repl_env))
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
-        try:
-            rep('["load", ["`", "' + sys.argv[1] + '"]]')
-        except EOFError:
-            pass
+        E.load(sys.argv[1])
         sys.exit(0)
 
-    print("miniMAL 1.0.3")
+    print("miniMAL 1.1.0")
     while True:
         try:
             line = input("> ")
@@ -153,8 +107,9 @@ if __name__ == "__main__":
         except EOFError:
             break
         try:
-            print("%s" % rep(line))
-        except ValueError as e:
-            print("%s" % e.args[0])
-        except Exception:
-            print("".join(traceback.format_exception(*sys.exc_info())))
+            print(getattr(E, 'pr*')(EVAL(loads(line), E)))
+        except Exception as e:
+            print(repr(e))
+        #import traceback
+        #except Exception:
+        #    print("".join(traceback.format_exception(*sys.exc_info())))

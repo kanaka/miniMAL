@@ -10,7 +10,7 @@ all: $(MIN_FILES)
 # Library
 miniMAL.py: stepA_miniMAL.py
 	echo '__all__ = ["EVAL","rep","repl_env"]' > $@
-	python2 minipy/minipy.py -R -p EVAL,rep,repl_env $< | grep -v "^#!" >> $@
+	python3 minipy/minipy.py -R -p EVAL,E $< | grep -v "^#!" >> $@
 
 # Standalone
 miniMAL.pyz: stepA_miniMAL.pyz
@@ -21,7 +21,7 @@ miniMAL.pyz: stepA_miniMAL.pyz
 # minipy
 #
 %-minipy.py: %.py
-	python2 minipy/minipy.py -R -o $@ $<
+	python3 minipy/minipy.py -R -o $@ $<
 
 minipy^%: %-minipy.py
 	@true
@@ -34,7 +34,7 @@ minipy^%: %-minipy.py
 	zip __main__.zip __main__.py
 	echo "#!/usr/bin/env python3" > $@
 	cat __main__.zip >> $@
-	rm -r __main__.zip
+	rm -f __main__.py __main__.zip
 	chmod +x $@
 
 
@@ -49,10 +49,10 @@ stats-full^%: %.py %-minipy.py %.pyz
 
 .PHONY: minipy stats clean
 minipy: $(foreach s,$(STEPS),minipy^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s)) $(MIN_FILES)
-	@wc $(MIN_FILES) | grep -v "total"
-stats-full: $(foreach s,$(STEPS),stats-full^$(s)) $(MIN_FILES)
-	@wc $(MIN_FILES) | grep -v "total"
+stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(MIN_FILES)
+	@wc core.json $(MIN_FILES) | grep -v "total"
+stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(MIN_FILES)
+	@wc core.json $(MIN_FILES) | grep -v "total"
 
 
 clean:

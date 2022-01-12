@@ -1,61 +1,43 @@
 #!/usr/bin/env python3
 # miniMAL
-# Copyright (C) 2017 Joel Martin
+# Copyright (C) 2022 Joel Martin
 # Licensed under MPL 2.0
 
-import sys, traceback, readline
+import sys, readline
 from json import loads, dumps
 
-def throw(a):
-    raise Exception(a)
+def throw(a): raise Exception(a)
 
-def Env(outer=object, binds=[], exprs=[], data=None):
-    data = data or {}
-    for ix in range(len(binds)):
-        if binds[ix] == "&":
-            data[binds[ix+1]] = exprs[ix:]
-            break
-        else:
-            data[binds[ix]] = exprs[ix]
-    return type("Env", (outer,), data or {})
-
-def eval_ast(ast, env):
-    if type(ast) == list:  return list(map(lambda e: EVAL(e, env), ast))
-    elif type(ast) == str:
-        if not hasattr(env, ast): throw(ast + " not found")
-        return getattr(env, ast)
-    else:                  return ast
+def Env(outer=object, binds=[], exprs=[], d=None):
+    d = d or {}
+    return type("Env", (outer,), d)
 
 def EVAL(ast, env):
-    if type(ast) != list: return eval_ast(ast, env)
+    #print("EVAL ast: %s" % ast)
+    # eval
+    if type(ast) != list:
+        return getattr(env, ast) if type(ast) == str else ast
 
     # apply
-    if "def" == ast[0]:
+    elif "def" == ast[0]:
         setattr(env, ast[1], EVAL(ast[2], env))
         return getattr(env, ast[1])
     elif "let" == ast[0]:
-        let_env = Env(env)
-        for ix in range(0, len(ast[1]), 2):
-            setattr(let_env, ast[1][ix], EVAL(ast[1][ix+1], let_env))
-        return EVAL(ast[2], let_env)
+        env = Env(env)
+        for i in range(0, len(ast[1]), 2):
+            setattr(env, ast[1][i], EVAL(ast[1][i+1], env))
+        return EVAL(ast[2], env)
     else:
-        el = eval_ast(ast, env)
+        el = [EVAL(a, env) for a in ast]
         fn = el[0]
         return fn(*el[1:])
 
-def PRINT(o):
-    return dumps(o, separators=(',', ':'), default=lambda o: None)
-
-import builtins
-repl_env = Env(outer=Env(data=builtins.__dict__), data={
+E = Env(d={
     '+':         lambda a,b: a+b,
     '-':         lambda a,b: a-b,
     '*':         lambda a,b: a*b,
     '/':         lambda a,b: int(a/b),
-})
-
-def rep(line):
-    return PRINT(EVAL(loads(line), repl_env))
+    })
 
 if __name__ == "__main__":
     while True:
@@ -65,8 +47,9 @@ if __name__ == "__main__":
         except EOFError:
             break
         try:
-            print("%s" % rep(line))
-        except ValueError as e:
-            print("%s" % e.args[0])
-        except Exception:
-            print("".join(traceback.format_exception(*sys.exc_info())))
+            print("%s" % dumps(EVAL(loads(line), E), separators=(',', ':')))
+        except Exception as e:
+            print(repr(e))
+        #import traceback
+        #except Exception:
+        #    print("".join(traceback.format_exception(*sys.exc_info())))
