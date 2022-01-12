@@ -5,7 +5,7 @@
 
 ;; Testing comments in a file
 ["load", ["`", "../tests/incB.json"]]
-; "incB.json finished"
+;/"incB.json finished"
 ;=>"incB.json return string"
 ["inc4", 7]
 ;=>11
@@ -99,14 +99,14 @@
 
 ;; Testing do form
 ["do", ["prn", ["`", "prn output1"]]]
-; "prn output1"
+;/"prn output1"
 ;=>null
 ["do", ["prn", ["`", "prn output2"]], 7]
-; "prn output2"
+;/"prn output2"
 ;=>7
 ["do", ["prn", ["`", "prn output1"]], ["prn", ["`", "prn output2"]], ["+", 1, 2]]
-; "prn output1"
-; "prn output2"
+;/"prn output1"
+;/"prn output2"
 ;=>3
 
 ;; -----------------------------------------------------
@@ -170,47 +170,47 @@
 
 ;; Testing prn
 ["prn"]
-; 
+;/
 ;=>null
 
 ["prn", ["`", ""]]
-; ""
+;/""
 ;=>null
 
 ["prn", ["`", "abc"]]
-; "abc"
+;/"abc"
 ;=>null
 
 ["prn", ["`", "abc  def"], ["`", "ghi jkl"]]
-; "abc  def" "ghi jkl"
+;/"abc  def" "ghi jkl"
 
 ["prn", ["`", "\""]]
-; "\""
+;/"\\""
 ;=>null
 
 ["prn", ["list", 1, 2, ["`", "abc"], ["`", "\""]], ["`", "def"]]
-; [1,2,"abc","\""] "def"
+;/\[1,2,"abc","\\""\] "def"
 ;=>null
 
 
 ;; Testing println
 ["println"]
-; 
+;/
 ;=>null
 
 ["println", ["`", ""]]
-; 
+;/
 ;=>null
 
 ["println", ["`", "abc"]]
-; abc
+;/abc
 ;=>null
 
 ["println", ["`", "abc  def"], ["`", "ghi jkl"]]
-; abc  def ghi jkl
+;/abc  def ghi jkl
 
 ["println", ["`", "\""]]
-; "
+;/"
 ;=>null
 
 ;;; Unquoting of strings for println doesn't work recursively yet
