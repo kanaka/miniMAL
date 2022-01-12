@@ -1,5 +1,5 @@
 // miniMAL
-// Copyright (C) 2017 Joel Martin
+// Copyright (C) 2022 Joel Martin
 // Licensed under MPL 2.0
 
 module.exports = function(E) {
@@ -89,30 +89,30 @@ function EVAL(ast, env, seq, f, el) {
 
 E = Object.assign(Object.create(E), {
   "js":    eval,
-  "eval":  (a,b) => EVAL(a, E),
+  "eval":  (...a) => EVAL(a[0], E),
   // TODO: figure out why global doesn't have this when non-interactive
   //"require":     require,
 
   // These could all also be interop
-  "=":     (a,b) => a===b,
-  "<":     (a,b) => a<b,
-  "+":     (a,b) => a+b,
-  "-":     (a,b) => a-b,
-  "*":     (a,b) => a*b,
-  "/":     (a,b) => a/b,
-  "isa":   (a,b) => a instanceof b,
-  "type":  (a,b) => typeof a,
+  "=":     (...a) => a[0]===a[1],
+  "<":     (...a) => a[0]<a[1],
+  "+":     (...a) => a[0]+a[1],
+  "-":     (...a) => a[0]-a[1],
+  "*":     (...a) => a[0]*a[1],
+  "/":     (...a) => a[0]/a[1],
+  "isa":   (...a) => a[0] instanceof a[1],
+  "type":  (...a) => typeof a[0],
   "new":   (...a) => new (a[0].bind(...a)),
-  "del":   (a,b) => delete a[b],
+  "del":   (...a) => delete a[0][a[1]],
   //"list":  (...a) => a,
   //"map":   (...a) => a[1].map(x => a[0](x)),
-  "throw": (a,b) => { throw(a) },
+  "throw": (...a) => { throw(a[0]) },
 
-  "read":  (a,b) => JSON.parse(a),
-  "slurp": (a,b) => require("fs").readFileSync(a,"utf8"),
-  "load":  (a,b) => EVAL(JSON.parse(require("fs").readFileSync(a,"utf8")),E),
+  "read":  (...a) => JSON.parse(a[0]),
+  "slurp": (...a) => require("fs").readFileSync(a[0],"utf8"),
+  "load":  (...a) => EVAL(JSON.parse(require("fs").readFileSync(a[0],"utf8")),E),
 
-  "rep":   (a,b) => JSON.stringify(EVAL(JSON.parse(a),E))
+  "rep":   (...a) => JSON.stringify(EVAL(JSON.parse(a[0]),E))
 })
 
 // Lib specific

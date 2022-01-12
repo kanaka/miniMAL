@@ -2,11 +2,12 @@ STEPS = step0_repl step1_read_print step2_eval step3_env step4_if_fn_do \
         step5_tco step6_file step7_interop step8_macros step9_try \
         stepA_miniMAL stepB_web stepB_node stepB_js1k
 
-WEB_FILES = web/miniMAL-min.js web/miniMAL-core.js
+NODE_FILES = miniMAL-node.js miniMAL-core.js
+WEB_FILES = web/miniMAL-js1k.js web/miniMAL-min.js web/miniMAL-core.js
 
 .SECONDARY:
 
-all: miniMAL-js1k.js miniMAL-node.js miniMAL-min.js $(WEB_FILES)
+all: $(NODE_FILES) $(WEB_FILES)
 
 #
 # Uglify
@@ -64,16 +65,13 @@ stats-full^%: %.js %-uglify.js %-crush.js %-regpack.js
 #
 # Web
 #
-miniMAL-min.js: stepB_web-regpack.js
-	cp $< $@
-
-web/miniMAL-min.js: miniMAL-min.js
+web/miniMAL-min.js: stepB_web-regpack.js
 	cp $< $@
 
 web/miniMAL-core.js: miniMAL-core.js
 	sed 's/module.exports =/core_ns =/' $< > $@
 
-miniMAL-js1k.js: stepB_js1k-regpack.js
+web/miniMAL-js1k.js: stepB_js1k-regpack.js
 	cp $< $@
 
 miniMAL-js1k.b64: stepB_js1k-regpack.js
@@ -97,10 +95,10 @@ miniMAL-core.js: core.json
 .PHONY: crush regpack stats stats-full clean
 crush: $(foreach s,$(STEPS),crush^$(s))
 regpack: $(foreach s,$(STEPS),regpack^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s)) core.json miniMAL-core.js $(WEB_FILES)
-	@wc core.json miniMAL-core.js $(WEB_FILES) | grep -v "total"
-stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json miniMAL-core.js $(WEB_FILES)
-	@wc core.json miniMAL-core.js $(WEB_FILES) | grep -v "total"
+stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(NODE_FILES) $(WEB_FILES)
+	@wc core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
+stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(NODE_FILES) $(WEB_FILES)
+	@wc core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
 
 clean:
-	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64 $(WEB_FILES)
+	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64 $(NODE_FILES) $(WEB_FILES)
