@@ -47,7 +47,6 @@
         "jscrush": "0.0.0",
         "source-map": "0.7.3",
         "uglify-js": "3.14.5",
-        "regpack": "5.0.1",
         "yargs": "^17.3.1",
         "async": "^3.2.2"
     }

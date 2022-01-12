@@ -15,7 +15,7 @@ all: $(NODE_FILES) $(WEB_FILES)
 UGLIFY = node_modules/.bin/uglifyjs
 UGLIFY_OPTS=-c hoist_funs=true,unsafe=true,keep_fargs=true,pure_getters=true,unused=false -e -m
 
-REGPACK = node_modules/.bin/regpack
+REGPACK = node regpack/bin/regpack
 REGPACK_OPTS=--crushGainFactor 2 --crushLengthFactor 1 --crushCopiesFactor 0 --crushTiebreakerFactor=1
 # This compresses js1k better but results in an error on load
 #REGPACK_OPTS=--crushGainFactor 1 --crushLengthFactor 0 --crushCopiesFactor 0 --crushTiebreakerFactor=1
@@ -68,8 +68,12 @@ stats-full^%: %.js %-uglify.js %-crush.js %-regpack.js
 web/miniMAL-min.js: stepB_web-regpack.js
 	cp $< $@
 
-web/miniMAL-core.js: miniMAL-core.js
-	sed 's/module.exports =/core_ns =/' $< > $@
+web/miniMAL-core.js: core.json
+	echo -n "core_ns =" > $@
+	cat $< >> $@
+	$(UGLIFY) $@ $(UGLIFY_OPTS) reserved=['core_ns'] | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
+	$(REGPACK) $(REGPACK_OPTS) $@.tmp > $@
+	rm $@.tmp
 
 web/miniMAL-js1k.js: stepB_js1k-regpack.js
 	cp $< $@

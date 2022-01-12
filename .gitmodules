@@ -1,3 +1,6 @@
 [submodule "python/minipy"]
 	path = python/minipy
 	url = https://github.com/kanaka/minipy
+[submodule "js/regpack"]
+	path = js/regpack
+	url = https://github.com/siorki/regpack
