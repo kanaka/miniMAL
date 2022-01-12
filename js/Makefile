@@ -1,6 +1,6 @@
-STEPS = step1_read_print step2_eval step3_env step4_if_fn_do step5_tco \
-        step6_file step7_interop step8_macros step9_try stepA_miniMAL \
-        stepB_web stepB_node stepB_js1k
+STEPS = step0_repl step1_read_print step2_eval step3_env step4_if_fn_do \
+        step5_tco step6_file step7_interop step8_macros step9_try \
+        stepA_miniMAL stepB_web stepB_node stepB_js1k
 
 WEB_FILES = web/miniMAL-min.js web/miniMAL-core.js
 
@@ -70,13 +70,8 @@ miniMAL-min.js: stepB_web-regpack.js
 web/miniMAL-min.js: miniMAL-min.js
 	cp $< $@
 
-web/miniMAL-core.js: core.json
-	echo -n "core_ns =" > $@
-	cat $< >> $@
-	#$(UGLIFY) -r core_ns $@ $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
-	$(UGLIFY) $@ $(UGLIFY_OPTS) reserved=['core_ns'] | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
-	$(REGPACK) $(REGPACK_OPTS) $@.tmp > $@
-	rm $@.tmp
+web/miniMAL-core.js: miniMAL-core.js
+	sed 's/module.exports =/core_ns =/' $< > $@
 
 miniMAL-js1k.js: stepB_js1k-regpack.js
 	cp $< $@
@@ -90,13 +85,22 @@ miniMAL-js1k.b64: stepB_js1k-regpack.js
 miniMAL-node.js: stepB_node-regpack.js
 	cp $< $@
 
+miniMAL-core.js: core.json
+	echo -n "module.exports =" > $@
+	cat $< >> $@
+	$(UGLIFY) $@ $(UGLIFY_OPTS) reserved=['exports'] | sed 's/^!function() *{\(.*\)}();/\1/' > $@.tmp
+	$(REGPACK) $(REGPACK_OPTS) $@.tmp > $@
+	rm $@.tmp
+#
+# multiple
+#
 .PHONY: crush regpack stats stats-full clean
 crush: $(foreach s,$(STEPS),crush^$(s))
 regpack: $(foreach s,$(STEPS),regpack^$(s))
-stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(WEB_FILES)
-	@wc core.json $(WEB_FILES) | grep -v "total"
-stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(WEB_FILES)
-	@wc core.json $(WEB_FILES) | grep -v "total"
+stats: $(foreach s,$(STEPS),stats^$(s)) core.json miniMAL-core.js $(WEB_FILES)
+	@wc core.json miniMAL-core.js $(WEB_FILES) | grep -v "total"
+stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json miniMAL-core.js $(WEB_FILES)
+	@wc core.json miniMAL-core.js $(WEB_FILES) | grep -v "total"
 
 clean:
 	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64 $(WEB_FILES)

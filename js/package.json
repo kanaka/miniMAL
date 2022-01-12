@@ -36,6 +36,7 @@
     "files": [
         "miniMAL",
         "miniMAL-node.js",
+        "miniMAL-core.js",
         "index.js",
         "miniMAL-min.js",
         "miniMAL-js1k.js",
