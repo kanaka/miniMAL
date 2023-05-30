@@ -19,7 +19,7 @@ Even though miniMAL is tiny it is actually a very powerful Lisp with
 advanced features including: higher-order functions, tail-call
 optimization, macros, JavaScript interop, and error-handling. miniMAL
 is powerful enough that it has been used to create a full
-[implementation of mal](https://github.com/kanaka/mal/tree/master/miniMAL).
+[implementation of mal](https://github.com/kanaka/mal/tree/master/impls/miniMAL).
 
 ### Usage
 
