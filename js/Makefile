@@ -1,6 +1,7 @@
-STEPS = step0_repl step1_read_print step2_eval step3_env step4_if_fn_do \
-        step5_tco step6_file step7_interop step8_macros step9_try \
-        stepA_miniMAL stepB_web stepB_node stepB_js1k
+STEPS = step0_repl step1_read_print step2_eval step3_env \
+	step4_if_fn_do step5_tco step6_file step7_interop \
+	step8_macros step9_try stepA_miniMAL \
+	stepB_web stepB_node stepB_js1k
 
 NODE_FILES = miniMAL-node.js miniMAL-core.js
 WEB_FILES = web/miniMAL-js1k.js web/miniMAL-min.js web/miniMAL-core.js
