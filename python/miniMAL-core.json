@@ -1,6 +1,6 @@
 ["do",
 
-["load", ["`", "core.json"]],
+["eval", ["read", ["slurp", ["`", "core.json"]]]]
 
 ["def", "repl", ["fn",["prompt", "rep"],
   ["let", ["line", ["readline", "prompt"]],

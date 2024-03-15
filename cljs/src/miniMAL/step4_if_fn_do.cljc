@@ -1,55 +1,59 @@
-(ns miniMAL.step4-if-fn-do
-  (:require [clojure.string :refer [replace]]))
+(ns miniMAL.step4-if-fn-do)
 
-(defn new-env [& [d B E]]
-  (atom (loop [d (js/Object.create d)
-               B B
-               E E]
-          (let [[b & B'] B
-                [e & E'] E]
-            (condp = b
-              nil d
-              "&" (assoc d (nth B 1) E)
-              (recur (assoc d b e) B' E'))))))
+(defn new-env [d & [B E]]
+  (let [[b [_ v]] (split-with #(not= "&" %) B)
+        [e E] (split-at (count b) E)]
+    (atom (merge (js/Object.create d)
+                 (zipmap b e)
+                 (if v {v E})))))
 
-(declare EVAL)
-(defn eval-ast [ast env]
-  (cond (or (array? ast) (seq? ast)) (doall (map #(EVAL % env) ast))
-        (and (string? ast) (contains? @env ast)) (get @env ast)
-        (string? ast) (throw (str ast " not found"))
-        :else ast))
+(defn EVAL [ast env & [sq]]
+    ;;(prn :EVAL :ast ast :sq sq)
+    (cond
+      sq
+      (doall (map #(EVAL % env) ast))
 
-(defn EVAL [ast env]
-  ;(prn :EVAL :ast ast)
-  (if (not (or (array? ast) (seq? ast)))
-    (eval-ast ast env)
-    (let [[a0 a1 a2 a3] ast]
-      (condp = a0
-        "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
-        "let" (let [env (new-env @env)]
-                (doseq [[s v] (partition 2 a1)]
-                  (swap! env assoc s (EVAL v env)))
-                (EVAL a2 env))
-        "do" (last (eval-ast (rest ast) env))
-        "if" (if (contains? #{0 nil false ""} (EVAL a1 env))
-               (EVAL a3 env)
-               (EVAL a2 env))
-        "fn" #(EVAL a2 (new-env @env a1 %&))
-        (let [[f & el] (eval-ast ast env)]
-          (apply f el))))))
+      (and (string? ast) (contains? @env ast))
+      (@env ast)
 
-(def E (new-env
-         (merge (into {} (for [[k v] (js->clj cljs.core)]
-                           [(demunge k) v]))
-                {"list" array
-                 "print" #(js/JSON.stringify
-                            % (fn [k v] (cond (fn? v) nil
-                                              (seq? v) (apply array v)
-                                              :else v)))
-                 })))
+      (string? ast)
+      (throw (str ast " not found"))
+
+      (or (array? ast) (sequential? ast))
+      (let [[a0 a1 a2 a3] ast]
+        (condp = a0
+          "def" (let [x (EVAL a2 env)]
+                  (swap! env assoc a1 x) x)
+          "let" (let [env (new-env @env)]
+                  (doseq [[s v] (partition 2 a1)]
+                    (swap! env assoc s (EVAL v env)))
+                  (EVAL a2 env))
+          "do" (last (EVAL (rest ast) env 1))
+          "if" (if ({0 1 nil 1 false 1 "" 1} (EVAL a1 env))
+                 (EVAL a3 env)
+                 (EVAL a2 env))
+          "fn" #(EVAL a2 (new-env @env a1 %&))
+          (let [[f & el] (EVAL ast env 1)]
+            (apply f el))))
+
+      :else
+      ast))
+
+(def E
+  (new-env
+    (merge
+      {"=" =
+       "<" <
+       "+" +
+       "-" -
+       "*" *
+       "/" /
+       "list" list
+       })))
 
 (defn -main [& args]
-  (let [efn #(%4 nil ((@E "print") (EVAL (js/JSON.parse %1) E)))]
-    (.start
-      (js/require "repl")
-      (clj->js {:eval efn :writer identity :terminal 0}))))
+  (.start
+    (js/require "repl")
+    #js {:eval #(%4 0 (try (EVAL (js/JSON.parse %1) E) (catch :default e (prn e))))
+              :writer #(js/JSON.stringify % (fn [k v] (if (fn? v) nil (clj->js v))))})
+  nil)

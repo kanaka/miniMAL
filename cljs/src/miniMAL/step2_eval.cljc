@@ -1,27 +1,34 @@
 (ns miniMAL.step2-eval)
 
-(declare EVAL)
+(defn EVAL [ast env & [sq]]
+    ;;(prn :EVAL :ast ast :sq sq)
+    (cond
+      sq
+      (map #(EVAL % env) ast)
 
-(defn eval-ast [ast env]
-  (cond (array? ast) (map #(EVAL % env) ast)
-        (and (string? ast) (contains? env ast)) (get env ast)
-        (string? ast) (throw (str ast " not found"))
-        :else ast))
+      (and (string? ast) (contains? env ast))
+      (env ast)
 
-(defn EVAL [ast env]
-  ;(prn :EVAL :ast ast)
-  (if (not (or (array? ast) (seq? ast)))
-    (eval-ast ast env)
-    (let [[f & el] (eval-ast ast env)]
-      (apply f el))))
+      (string? ast)
+      (throw (str ast " not found"))
 
-(def E {"+" +
-        "-" -
-        "*" *
-        "/" /})
+      (sequential? ast)
+      (let [[f & el] (EVAL ast env 1)]
+        (apply f el))
+
+      :else
+      ast))
+
+(def E
+  {"+" +
+   "-" -
+   "*" *
+   "/" /
+   })
 
 (defn -main [& args]
-  (let [efn #(%4 nil (js/JSON.stringify (EVAL (js/JSON.parse %1) E)))]
-    (.start
-      (js/require "repl")
-      (clj->js {:eval efn :writer identity :terminal 0}))))
+  (.start
+    (js/require "repl")
+    (clj->js {:eval #(%4 0 (EVAL (js->clj (js/JSON.parse %1)) E))
+              :writer #(js/JSON.stringify (clj->js %))}))
+  nil)

@@ -29,7 +29,7 @@
 
 ;; Testing load
 
-["load", ["`", "../tests/inc.json"]]
+["eval", ["read", ["slurp", ["`", "../tests/inc.json"]]]]
 ["inc1", 7]
 ;=>8
 ["inc2", 7]
@@ -38,6 +38,6 @@
 ;=>12
 
 ;;
-;; Testing that ARGS exists and is an empty list
-"ARGS"
+;; Testing that argv exists and is an empty list
+"argv"
 ;=>[]

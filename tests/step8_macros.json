@@ -1,5 +1,5 @@
 ;; Load core.json
-["load", ["`", "core.json"]]
+["eval", ["read", ["slurp", ["`", "core.json"]]]]
 
 ;; Testing non-macro function
 ["not", ["=", 1, 1]]

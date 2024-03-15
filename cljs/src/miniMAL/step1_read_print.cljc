@@ -1,10 +1,11 @@
 (ns miniMAL.step1-read-print)
 
 (defn EVAL [ast env]
-  ast)
+    ast)
 
 (defn -main [& args]
-  (let [efn #(%4 nil (js/JSON.stringify (EVAL (js/JSON.parse %1) {})))]
-    (.start
-      (js/require "repl")
-      (clj->js {:eval efn :writer identity :terminal 0}))))
+  (.start
+    (js/require "repl")
+    (clj->js {:eval #(%4 0 (EVAL (js->clj (js/JSON.parse %1)) {}))
+              :writer #(js/JSON.stringify (clj->js %))}))
+  nil)

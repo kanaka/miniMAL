@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # miniMAL
-# Copyright (C) 2022 Joel Martin
+# Copyright (C) 2024 Joel Martin
 # Licensed under MPL 2.0
 
 import sys, readline, builtins
@@ -75,14 +75,14 @@ E = Env(d={**builtins.__dict__,
 
     'read':      loads,
     'pr*':       lambda a: dumps(a, separators=(',', ':')),
-    'load':      lambda a: EVAL(loads(open(a).read()),E),
+    'slurp':     lambda a: open(a).read(),
 
-    'ARGS':      sys.argv[2:]
+    'argv':      sys.argv[2:]
     })
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
-        E.load(sys.argv[1])
+        EVAL(loads(E.slurp(sys.argv[1])), E)
         sys.exit(0)
 
     while True:

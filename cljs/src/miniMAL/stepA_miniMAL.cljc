@@ -1,91 +1,97 @@
-(ns miniMAL.stepA-miniMAL
-  (:require [clojure.string :refer [replace]]))
+(ns miniMAL.stepA-miniMAL)
 
-(defn new-env [& [d B E]]
-  (atom (loop [d (js/Object.create d)
-               B B
-               E E]
-          (let [[b & B'] B
-                [e & E'] E]
-            (condp = b
-              nil d
-              "&" (assoc d (nth B 1) E)
-              (recur (assoc d b e) B' E'))))))
+(defn new-env [d & [B E]]
+  (let [[b [_ v]] (split-with #(not= "&" %) B)
+        [e E]     (split-at (count b) E)]
+    (atom (merge (js/Object.create d)
+                 (zipmap b e)
+                 (if v {v E})))))
 
-(declare EVAL)
-(defn eval-ast [ast env]
-  (cond (or (array? ast) (seq? ast)) (doall (map #(EVAL % env) ast))
-        (and (string? ast) (contains? @env ast)) (get @env ast)
-        (string? ast) (throw (str ast " not found"))
-        :else ast))
-
-(defn EVAL [ast env]
+(defn EVAL [ast env & [sq]]
   (loop [ast ast
          env env]
-    ;(prn :EVAL :ast ast)
-    (if (not (or (array? ast) (seq? ast)))
-      (eval-ast ast env)
-      ;; inlined macroexpand
-      (let [ast (loop [ast ast]
-                  (if (and (or (array? ast) (seq? ast))
-                           (:M (meta (get @env (first ast)))))
-                    (recur (apply (get @env (first ast)) (rest ast)))
-                    ast))]
-        (if (not (or (array? ast) (seq? ast)))
-          (eval-ast ast env)
-          (let [[a0 a1 a2 a3] ast]
-            (condp = a0
-              "def" (let [x (EVAL a2 env)] (swap! env assoc a1 x) x)
-              "~" (with-meta (EVAL a1 env) {:M true})
-              "let" (let [env (new-env @env)]
-                      (doseq [[s v] (partition 2 a1)]
-                        (swap! env assoc s (EVAL v env)))
-                      (recur a2 env))
-              "`" a1
-              ".-" (let [[o k & [v]] (eval-ast (rest ast) env)]
-                     (if v (aset o k v) (aget o k)))
-              "." (let [[o & el] (eval-ast (rest ast) env)]
-                    (apply (get o (first el)) (rest el)))
-              "try" (try
-                      (EVAL a1 env)
-                      (catch :default t
-                        (EVAL (nth a2 2) (new-env @env [(nth a2 1)] [t]))))
-              "do" (do (eval-ast (->> ast drop-last rest) env)
-                       (recur (last ast) env))
-              "if" (if (contains? #{0 nil false ""} (EVAL a1 env))
-                     (recur a3 env)
-                     (recur a2 env))
-              "fn" (with-meta #(EVAL a2 (new-env @env a1 %&))
-                              [a2 env a1])
-              (let [[f & el] (eval-ast ast env)
+    ;;(prn :EVAL :ast ast :sq sq)
+    (cond
+      sq
+      (doall (map #(EVAL % env) ast))
+
+      (object? ast)
+      (clj->js (into {} (for [[k v] (js->clj ast)]
+                          [k (EVAL v env)])))
+
+      (and (string? ast) (contains? @env ast))
+      (@env ast)
+
+      (string? ast)
+      (throw (str ast " not found"))
+
+      (or (array? ast) (sequential? ast))
+      (let [[a0 a1 a2 a3] ast]
+        (condp = a0
+          "def" (let [x (EVAL a2 env)]
+                  (swap! env assoc a1 x) x)
+          "let" (let [env (new-env @env)]
+                  (doseq [[s v] (partition 2 a1)]
+                    (swap! env assoc s (EVAL v env)))
+                  (recur a2 env))
+          "do" (recur (do (EVAL (-> ast drop-last rest) env 1)
+                          (last ast))
+                      env)
+          "if" (recur (if ({0 1 nil 1 false 1 "" 1} (EVAL a1 env))
+                        a3
+                        a2)
+                      env)
+          "fn" (with-meta #(EVAL a2 (new-env @env a1 %&))
+                          [a2 env a1])
+          "`" a1
+          ".-" (let [[o k & [v]] (EVAL (rest ast) env 1)]
+                 (if v (aset o k v) (aget o k)))
+          "." (let [[o & el] (EVAL (rest ast) env 1)]
+                (apply (get o (first el)) (rest el)))
+          "~" (with-meta (EVAL a1 env)
+                         {:M true})
+          "try" (try (EVAL a1 env)
+                     (catch :default e
+                       (EVAL (nth a2 2) (new-env @env [(nth a2 1)] [e]))))
+          (let [f (EVAL a0 env)]
+            (if (-> f meta :M)
+              (recur (apply f (rest ast)) env)
+              (let [el (EVAL (rest ast) env 1)
                     [ast env p] (meta f)]
                 (if ast
                   (recur ast (new-env @env p el))
-                  (apply f el))))))))))
+                  (apply f el)))))))
 
-(def E (new-env
-         (merge (into {} (for [[k v] (js->clj cljs.core)]
-                           [(demunge k) v]))
-                {"js" js/eval
-                 "eval" #(EVAL %1 E)
+      :else
+      ast)))
 
-                 "list" array
-                 "throw" #(throw %)
-
-                 "read" #(js/JSON.parse %)
-                 "print" #(js/JSON.stringify
-                            % (fn [k v] (cond (fn? v) nil
-                                              (seq? v) (apply array v)
-                                              :else v)))
-                 "slurp" #(.readFileSync (js/require "fs") % "utf8")
-                 "load" #(EVAL (js/JSON.parse ((@E "slurp") %)) E)})))
+(def E
+  (new-env
+    (merge
+      ;; Formatted like this for easy sed'ing
+      #?(:org.babashka/nbb
+         (into {} (for [[k v] (ns-map *ns*)]
+                    [(str k) (if (var? v) @v)])) #_nbb-end
+         :cljs
+         (into {} (for [[k v] (js->clj cljs.core)]
+                    [(demunge k) v]))) #_cljs-end
+      {"map" (comp doall map)
+       "read" #(js/JSON.parse %)
+       "eval" #(EVAL % E)
+       "pr*" #(js/JSON.stringify % (fn [k v] (if (fn? v) nil (clj->js v))))
+       "slurp" #(.readFileSync (js/require "fs") % "utf8")
+       ;;"load" #(EVAL (js/JSON.parse ((@E "slurp") %)) E)
+       "js" js/eval
+       "throw" #(throw %)})))
 
 (defn -main [& args]
-  (swap! E assoc "ARGS" (apply array (rest args)))
+  (swap! E assoc "argv" (clj->js (rest args)))
   (if args
-    ((@E "load") (first args))
-    (let [efn #(%4 nil ((@E "print") (EVAL (js/JSON.parse %1) E)))]
-      (println "miniMAL 1.0.3")
+    (EVAL (js/JSON.parse ((@E "slurp") (first args))) E)
+    (do
+      (println "miniMAL 1.2.0")
       (.start
         (js/require "repl")
-        (clj->js {:eval efn :writer identity :terminal 0})))))
+        #js {:eval #(%4 0 (try (EVAL (js/JSON.parse %1) E) (catch :default e (prn e))))
+             :writer (@E "pr*")})))
+  nil)

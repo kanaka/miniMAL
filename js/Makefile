@@ -25,30 +25,24 @@ node_modules/uglify-js:
 	npm install
 
 %-uglify-pretty.js: %.js node_modules/uglify-js
-	$(UGLIFY) $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"object"/ typeof {}/g' | sed 's/"string"/ typeof ""/g' > $@
+	$(UGLIFY) $< -b $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"object"/ typeof {}/g' | sed 's/"string"/ typeof ""/g' | sed 's/\([^A-Za-z0-9_]\) typeof/\1typeof/g' > $@
 
 %-uglify.js: %.js node_modules/uglify-js
-	$(UGLIFY) $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"object"/ typeof {}/g' | sed 's/"string"/ typeof ""/g' > $@
+	$(UGLIFY) $<    $(UGLIFY_OPTS) | sed 's/^!function() *{\(.*\)}();/\1/' | sed 's/"object"/ typeof {}/g' | sed 's/"string"/ typeof ""/g' | sed 's/\([^A-Za-z0-9_]\) typeof/\1typeof/g' > $@
 
-#
-# JsCrush
-#
-node_modules/jscrush:
-	npm install
-
-%-crush.js: %-uglify.js node_modules/jscrush
-	cat $< | node_modules/jscrush/bin/jscrush > $@
-
-crush^%: %-crush.js
-	@true
+%-uglify.json: %.json node_modules/uglify-js
+	echo -n "ugvar=" > $@.tmp
+	cat $< >> $@.tmp
+	$(UGLIFY) $@.tmp $(UGLIFY_OPTS) reserved=['ugvar'] -c booleans=false | sed -e 's/ugvar=//' -e 's/;$$//' > $@
+	rm $@.tmp
 
 #
 # RegPack
 #
-node_modules/regpack:
-	npm install
+regpack/node_modules/minimist:
+	cd regpack && npm install
 
-%-regpack.js: %-uglify.js node_modules/regpack
+%-regpack.js: %-uglify.js regpack/node_modules/minimist
 	$(REGPACK) $(REGPACK_OPTS) $< | tr -d '\n' > $@
 
 regpack^%: %-regpack.js
@@ -60,7 +54,7 @@ regpack^%: %-regpack.js
 stats^%: %.js %-regpack.js
 	@wc $^ | grep -v "total"
 
-stats-full^%: %.js %-uglify.js %-crush.js %-regpack.js
+stats-full^%: %.js %-uglify.js %-regpack.js
 	@wc $^ | grep -v "total"
 
 #
@@ -97,8 +91,7 @@ miniMAL-core.js: core.json
 #
 # multiple
 #
-.PHONY: crush regpack stats stats-full clean
-crush: $(foreach s,$(STEPS),crush^$(s))
+.PHONY: regpack stats stats-full clean
 regpack: $(foreach s,$(STEPS),regpack^$(s))
 stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(NODE_FILES) $(WEB_FILES)
 	@wc core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
@@ -106,4 +99,4 @@ stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(NODE_FILES) $(WEB_
 	@wc core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
 
 clean:
-	rm -f *-uglify.js *-uglify-pretty.js *-crush.js *-regpack.js miniMAL-js1k.b64 $(NODE_FILES) $(WEB_FILES)
+	rm -f *-uglify.js *-uglify-pretty.js *-regpack.js miniMAL-js1k.b64 $(NODE_FILES) $(WEB_FILES)

@@ -7,8 +7,6 @@
 ["def", ".", ["fn", ["a", "b", "&", "args"],
   ["py-apply", [".-", "a", "b"], "args"]]],
 ["def", "readline", "input"],
-["def", "slurp", ["fn", ["a"],
-  [".", ["open", "a"], ["`", "read"]]]],
 
 ["def", "map", ["fn", ["a", "b"],
     ["py-apply", "py-list", ["py-map", "a", "b"]]]],

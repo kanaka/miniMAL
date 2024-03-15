@@ -2,46 +2,83 @@ STEPS = step0_repl step1_read_print step2_eval step3_env \
 	step4_if_fn_do step5_tco step6_file step7_interop \
 	step8_macros step9_try stepA_miniMAL
 
-MIN_FILES = src/miniMAL/miniMAL.cljs miniMAL
+MIN_FILES = $(foreach S,$(STEPS),src-min/miniMAL/$(S).cljc) miniMAL
+BUILD_FILES = $(foreach S,$(STEPS),build/$(S).js) miniMAL.js
 
-all: $(MIN_FILES)
+.SECONDARY:
 
-src/miniMAL/miniMAL.cljs: src/miniMAL/stepA_miniMAL.cljs
+all: $(MIN_FILES) $(BUILD_FILES)
+
+#
+# Compressed
+#
+src-min/miniMAL/%.cljc: src/miniMAL/%.cljc
+	@echo "Compressing $@"
+	@mkdir -p src-min/miniMAL/
 	@cat $< \
 	    | egrep -v "^ *$$|^ *;" \
 	    | sed 's/^ *//' \
 	    | tr '\n' ' ' \
-	    | sed 's/  *(/(/g' \
-	    | sed 's/)  */)/g' \
-	    | sed 's/  *"/"/g' \
-	    | sed 's/  *\[/[/g' \
-	    | sed 's/]  */]/g' \
-	    | sed 's/"  *\([^n]\)/"\1/g' \
-	    | sed 's/\<ast\>/A/g' \
-	    | sed 's/\<env\>/E/g' \
-	    | sed 's/\<a0\>/a/g' \
-	    | sed 's/\<a1\>/b/g' \
-	    | sed 's/\<a2\>/c/g' \
-	    | sed 's/\<a3\>/d/g' \
-	    | sed 's/stepA-miniMAL/miniMAL/' \
-	    | sed 's/\<EVAL\>/X/g' \
-	    | sed 's/\<eval-ast\>/Y/g' \
-	    | sed 's/\<new-env\>/Z/g' \
+	    | sed \
+	       -e 's/  *(/(/g' \
+	       -e 's/)  */)/g' \
+	       -e 's/  *"/"/g' \
+	       -e 's/  *\[/[/g' \
+	       -e 's/]  */]/g' \
+	       -e 's/  *{/{/g' \
+	       -e 's/"  *\([^n]\)/"\1/g' \
+	       -e 's/\<new-env\>/Y/g' \
+	       -e 's/\([^-]\)\<env\>/\1E/g' \
+	       -e 's/\<ast\>/A/g' \
+	       -e 's/\<EVAL\>/X/g' \
+	       -e 's/\<a0\>/a/g' \
+	       -e 's/\<a1\>/b/g' \
+	       -e 's/\<a2\>/c/g' \
+	       -e 's/\<a3\>/d/g' \
+	       -e 's/\<rest\>/R/g' \
+	       -e 's/\((ns [^)]*)\)/\1(def R rest)/' \
+	       -e 's/\<js\/JSON.parse\>/P/g' \
+	       -e 's/\((ns [^)]*)\)/\1(def P js\/JSON.parse)/' \
+	       -e 's/ *#?(:org.babashka\/nbb *\(.*\) *#_nbb-end */\1/' \
+	       -e 's/ *:cljs *\(.*\)) *#_cljs-end *//' \
 	    > $@
 
-miniMAL: src/miniMAL/miniMAL.cljs
-	@echo "#!/usr/bin/lumo -q" > $@
-	@cat $< \
-	    | sed "s/(ns.*:require\([^)]*)\))/(require \'\1/" \
-	    | sed 's/defn -main\[& args\]/let [args (seq (.slice js\/process.argv 4))]/' \
+miniMAL: src-min/miniMAL/stepA_miniMAL.cljc
+	echo "Compressing $@"
+	echo "#!/usr/bin/env nbb" > $@
+	cat $< \
+	    | sed "s/(ns [^)]*)//" \
+	    | sed 's/defn -main\[& args\]/let [args (seq (.slice js\/process.argv 3))]/' \
 	    >> $@
-	@chmod +x $@
+	chmod +x $@
 
+node_modules/.bin/shadow-cljs:
+	npm install
 
-.PHONY: clean
+# Full ClojureScript Compiled
+build/%.js: node_modules/.bin/shadow-cljs src/miniMAL/%.cljc
+	node_modules/.bin/shadow-cljs release $*
+	chmod +x $@
 
-stats: $(foreach S,$(STEPS),src/miniMAL/$(S).cljs) $(MIN_FILES)
+miniMAL.js: node_modules/shadow-cljs src/miniMAL/stepA_miniMAL.cljc
+	node_modules/.bin/shadow-cljs release miniMAL
+	chmod +x $@
+
+#
+# Stats
+#
+stats^%: src/miniMAL/%.cljc src-min/miniMAL/%.cljc
 	@wc $^ | grep -v "total"
+
+
+.PHONY: clean stats
+
+stats: $(foreach s,$(STEPS),stats^$(s)) miniMAL core.json
+	@wc miniMAL core.json | grep -v "total"
 
 clean:
 	rm -f $(MIN_FILES)
+	rm -f $(BUILD_FILES)
+	rm -fr build/cljs-runtime
+	rmdir -p build || true
+	rmdir -p src-min/miniMAL || true

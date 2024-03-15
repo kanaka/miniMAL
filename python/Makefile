@@ -10,7 +10,7 @@ all: $(MIN_FILES)
 
 # Library
 miniMAL.py: stepA_miniMAL.py
-	echo '__all__ = ["EVAL","rep","repl_env"]' > $@
+	echo '__all__ = ["EVAL","E"]' > $@
 	python3 minipy/minipy.py -R -p EVAL,E $< | grep -v "^#!" >> $@
 
 # Standalone
