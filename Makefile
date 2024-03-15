@@ -87,7 +87,7 @@ argv_STEP = step7_interop
 # Map of step (e.g. "step8") to executable file for that step
 js_STEP_TO_PROG =      js/$($(1)).js
 python_STEP_TO_PROG =  python/$($(1)).py
-cljs_STEP_TO_PROG =    cljs/src/miniMAL/$($(1)).cljs
+cljs_STEP_TO_PROG =    cljs/src/miniMAL/$($(1)).cljc
 
 ##########################################################
 # Most of the rest of this file comes from mal/Makefile
