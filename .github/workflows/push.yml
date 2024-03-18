@@ -1,0 +1,44 @@
+name: Push (compose tests)
+
+on:
+  push: {}
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch: {}
+
+jobs:
+  tests-and-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install JavaScript and ClojureScript node modules
+        run: |
+            ( cd js && npm install )
+            ( cd cljs && npm install )
+
+      - name: JavaScript Step Tests
+        run: make test^js
+
+      - name: JavaScript Regression Tests
+        run: make REGRESS=1 test^js
+
+      - name: Python Step Tests
+        run: make test^python
+
+      - name: Python Regression Tests
+        run: make REGRESS=1 test^python
+
+      - name: ClojureScript Step Tests
+        run: make test^cljs
+
+      - name: ClojureScript Regression Tests
+        run: make REGRESS=1 test^cljs
+
+      - name: Generate stats
+        run: |
+            make stats # Build compressed artifacts
+            make stats # Without the build noise
