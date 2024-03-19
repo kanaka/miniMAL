@@ -1,10 +1,10 @@
 ;; Stub out "~"
 ["def", "~", ["fn", ["a"], null]]
 ;; Load core.json
-["load", ["`", "core.json"]]
+["eval", ["read", ["slurp", ["`", "core.json"]]]]
 
 ;; Testing comments in a file
-["load", ["`", "../tests/incB.json"]]
+["eval", ["read", ["slurp", ["`", "../tests/incB.json"]]]]
 ;/"incB.json finished"
 ;=>"incB.json return string"
 ["inc4", 7]
@@ -13,7 +13,7 @@
 ;=>12
 
 ;; Testing map literal across multiple lines in a file
-["load", ["`", "../tests/incC.json"]]
+["eval", ["read", ["slurp", ["`", "../tests/incC.json"]]]]
 "mymap"
 ;=>{"a":1}
 

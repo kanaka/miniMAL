@@ -1,0 +1,26 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/"]
+
+ :build-defaults {:output-dir "build/"
+                  ;; Don't try and connect back to shadow-cljs process
+                  :devtools {:enabled false :console-support false}
+                  :compiler-options
+                  {:optimizations :simple
+                   :source-map-use-fs-paths true}}
+
+ :builds
+ {:step0_repl       {:target :node-script :main miniMAL.step0-repl/-main       :output-to "build/step0_repl.js"}
+  :step1_read_print {:target :node-script :main miniMAL.step1-read-print/-main :output-to "build/step1_read_print.js"}
+  :step2_eval       {:target :node-script :main miniMAL.step2-eval/-main       :output-to "build/step2_eval.js"}
+  :step3_env        {:target :node-script :main miniMAL.step3-env/-main        :output-to "build/step3_env.js"}
+  :step4_if_fn_do   {:target :node-script :main miniMAL.step4-if-fn-do/-main   :output-to "build/step4_if_fn_do.js"}
+  :step5_tco        {:target :node-script :main miniMAL.step5-tco/-main        :output-to "build/step5_tco.js"}
+  :step6_file       {:target :node-script :main miniMAL.step6-file/-main       :output-to "build/step6_file.js"}
+  :step7_interop    {:target :node-script :main miniMAL.step7-interop/-main    :output-to "build/step7_interop.js"}
+  :step8_macros     {:target :node-script :main miniMAL.step8-macros/-main     :output-to "build/step8_macros.js"}
+  :step9_try        {:target :node-script :main miniMAL.step9-try/-main        :output-to "build/step9_try.js"}
+  :stepA_miniMAL    {:target :node-script :main miniMAL.stepA-miniMAL/-main    :output-to "build/stepA_miniMAL.js"}
+  :miniMAL          {:target :node-script :main miniMAL.stepA-miniMAL/-main    :output-to "miniMAL.js"}}
+
+ }

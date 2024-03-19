@@ -1,20 +1,16 @@
 #!/usr/bin/env node
 
-var m = require('./miniMAL-node.js')(global);
+let m = require('./miniMAL-node.js')(global)
+m.eval(require('./miniMAL-core.js'))
 
 Object.assign(m, {
     "require": require,
-    // Override to enable shebang usage (ignore shebang line)
+    // Load with shebang support (i.e. ignore shebang line)
     "load":    a => m.eval(JSON.parse(m.slurp(a).replace(/^#![^\n]*\n/, ""))),
-    "ARGS":    process.argv.slice(3)
+    "argv":    process.argv.slice(3)
 })
 
-// Node specific
-if (process.argv[2]) {
-    m.load(process.argv[2])
-} else {
-    console.log("miniMAL 1.1.0")
-    require("repl").start({
-        eval: (...a) => console.log(m.rep(a[0])) | a[3](),
-        terminal: false})
-}
+if (process.argv[2]) { return m.load(process.argv[2]) }
+
+console.log("miniMAL 1.2.0")
+require("repl").start({eval: (...a) => console.log(m.rep(a[0])) | a[3]()})

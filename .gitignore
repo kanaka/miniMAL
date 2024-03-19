@@ -10,3 +10,6 @@ notes
 *.pyc
 *.pyz
 *-minipy.py
+cljs/.shadow-cljs
+cljs/build
+cljs/src-min

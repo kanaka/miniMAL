@@ -1,14 +1,21 @@
 ;; Load core.json
-["load", ["`", "core.json"]]
+["eval", ["read", ["slurp", ["`", "core.json"]]]]
 
 ;;
 ;; Testing new
 ["def", "o", ["new", "Object"]]
 ;=>{}
-["def", "f", ["new", ["fn", [], null]]]
+["def", "mal-f", ["new", ["fn", [], null]]]
 ;=>{}
+
 ;;
 ;; Testing method invocation
+["def", "a", [".", "Array", ["`", "from"], ["list", 7, 8, 9]]]
+["count", "a"]
+;=>3
+["get", "a", 1]
+
+8
 ["def", "b", [".", "Buffer", ["`", "from"], ["list", 7, 8, 9]]]
 ["count", "b"]
 ;=>3
@@ -17,6 +24,25 @@
 
 ;;
 ;; Testing isa
+["isa", "o", "Object"]
+;=>true
+["isa", "o", "String"]
+;=>false
+["isa", "a", "Object"]
+;=>true
+["isa", "a", "Array"]
+;=>true
+["isa", "a", "Function"]
+;=>false
+["isa", "o", "String"]
+;=>false
+["def", "f", ["new", "Function"]]
+["isa", "f", "Object"]
+;=>true
+["isa", "f", "Function"]
+;=>true
+["isa", "f", "String"]
+;=>false
 ["isa", "b", "Object"]
 ;=>true
 ["isa", "b", "Buffer"]

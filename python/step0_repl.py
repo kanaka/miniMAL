@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # miniMAL
-# Copyright (C) 2022 Joel Martin
+# Copyright (C) 2024 Joel Martin
 # Licensed under MPL 2.0
 
 import readline

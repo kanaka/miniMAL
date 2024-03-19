@@ -1,3 +1,4 @@
 #!/bin/bash
 STEP=${STEP:-stepA_miniMAL}
-exec lumo -c $(dirname $0)/src -m miniMAL.${STEP//_/-} "${@}"
+exec $(dirname $0)/node_modules/.bin/nbb -cp $(dirname $0)/src -m miniMAL.${STEP//_/-} "${@}"
+#exec $(dirname $0)/node_modules/.bin/nbb -cp $(dirname $0)/src-min -m miniMAL.${STEP//_/-} "${@}"

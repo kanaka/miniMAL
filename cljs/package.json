@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "nbb": "^0.1.9"
+  },
+  "devDependencies": {
+    "shadow-cljs": "^2.27.5"
+  }
+}

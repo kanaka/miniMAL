@@ -1,8 +1,8 @@
 ["do",
 
 ["def", "~", ["fn", ["a"], null]],
-["load", ["`", "core.json"]],
+["eval", ["read", ["slurp", ["`", "core.json"]]]],
 
-["prn", "ARGS"]
+["prn", "argv"]
 
 ]
