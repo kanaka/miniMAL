@@ -52,10 +52,10 @@ regpack^%: %-regpack.js
 # Stats
 #
 stats^%: %.js %-regpack.js
-	@wc $^ | grep -v "total"
+	@wc -l -c $^ | grep -v "total"
 
 stats-full^%: %.js %-uglify.js %-regpack.js
-	@wc $^ | grep -v "total"
+	@wc -l -c $^ | grep -v "total"
 
 #
 # Web
@@ -94,9 +94,9 @@ miniMAL-core.js: core.json
 .PHONY: regpack stats stats-full clean
 regpack: $(foreach s,$(STEPS),regpack^$(s))
 stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(NODE_FILES) $(WEB_FILES)
-	@wc core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
+	@wc -l -c core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
 stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(NODE_FILES) $(WEB_FILES)
-	@wc core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
+	@wc -l -c core.json $(NODE_FILES) $(WEB_FILES) | grep -v "total"
 
 clean:
 	rm -f *-uglify.js *-uglify-pretty.js *-regpack.js miniMAL-js1k.b64 $(NODE_FILES) $(WEB_FILES)

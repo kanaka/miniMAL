@@ -41,15 +41,14 @@ jobs:
       - name: Generate stats
         run: |
             make stats # Build compressed artifacts
+
             echo "### JavaScript stats" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            make stats^js >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |"
+            make stats^js | awk '/ *[0-9]+/ {print "| "$1" | "$2" | "$3" | "}' >> $GITHUB_STEP_SUMMARY
+
             echo "### Python stats" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            make stats^python >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |"
+            make stats^python | awk '/ *[0-9]+/ {print "| "$1" | "$2" | "$3" | "}' >> $GITHUB_STEP_SUMMARY
+
             echo "### ClojureScript stats" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            make stats^cljs >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            make stats^cljs | awk '/ *[0-9]+/ {print "| "$1" | "$2" | "$3" | "}' >> $GITHUB_STEP_SUMMARY

@@ -68,13 +68,13 @@ miniMAL.js: node_modules/shadow-cljs src/miniMAL/stepA_miniMAL.cljc
 # Stats
 #
 stats^%: src/miniMAL/%.cljc src-min/miniMAL/%.cljc
-	@wc $^ | grep -v "total"
+	@wc -l -c $^ | grep -v "total"
 
 
 .PHONY: clean stats
 
 stats: $(foreach s,$(STEPS),stats^$(s)) miniMAL core.json
-	@wc miniMAL core.json | grep -v "total"
+	@wc -l -c miniMAL core.json | grep -v "total"
 
 clean:
 	rm -f $(MIN_FILES)

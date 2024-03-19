@@ -43,17 +43,17 @@ minipy^%: %-minipy.py
 # Stats
 #
 stats^%: %.py %-minipy.py
-	@wc $^ | grep -v "total"
+	@wc -l -c $^ | grep -v "total"
 
 stats-full^%: %.py %-minipy.py %.pyz
-	@wc $^ | grep -v "total"
+	@wc -l -c $^ | grep -v "total"
 
 .PHONY: minipy stats clean
 minipy: $(foreach s,$(STEPS),minipy^$(s))
 stats: $(foreach s,$(STEPS),stats^$(s)) core.json $(MIN_FILES)
-	@wc core.json $(MIN_FILES) | grep -v "total"
+	@wc -l -c core.json $(MIN_FILES) | grep -v "total"
 stats-full: $(foreach s,$(STEPS),stats-full^$(s)) core.json $(MIN_FILES)
-	@wc core.json $(MIN_FILES) | grep -v "total"
+	@wc -l -c core.json $(MIN_FILES) | grep -v "total"
 
 
 clean:
