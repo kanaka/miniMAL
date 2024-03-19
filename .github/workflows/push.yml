@@ -43,12 +43,13 @@ jobs:
             make stats # Build compressed artifacts
 
             echo "### JavaScript stats" >> $GITHUB_STEP_SUMMARY
-            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |"
+            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |" >> $GITHUB_STEP_SUMMARY
             make stats^js | awk '/ *[0-9]+/ {print "| "$1" | "$2" | "$3" | "}' >> $GITHUB_STEP_SUMMARY
 
             echo "### Python stats" >> $GITHUB_STEP_SUMMARY
-            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |"
+            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |" >> $GITHUB_STEP_SUMMARY
             make stats^python | awk '/ *[0-9]+/ {print "| "$1" | "$2" | "$3" | "}' >> $GITHUB_STEP_SUMMARY
 
             echo "### ClojureScript stats" >> $GITHUB_STEP_SUMMARY
+            echo -e "| Lines | Bytes | File |\n| ----- | ----- | ---- |" >> $GITHUB_STEP_SUMMARY
             make stats^cljs | awk '/ *[0-9]+/ {print "| "$1" | "$2" | "$3" | "}' >> $GITHUB_STEP_SUMMARY
