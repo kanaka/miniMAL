@@ -29,6 +29,8 @@
 ;=>false
 ["if", null, 8, 7]
 ;=>7
+["if", null, 8]
+;=>undefined
 
 
 ;; Testing basic conditionals

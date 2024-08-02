@@ -35,7 +35,7 @@ function EVAL(env, ast, f, el) {
         ast.slice(1,-1).map(v => EVAL(env, v))
         ast = ast.at(-1)
       } else if (ast[0] == "if") {  // branching conditional
-        ast = EVAL(env, ast[1]) ? ast[2] : ast.at(-1)
+        ast = EVAL(env, ast[1]) ? ast[2] : ast[3]
       } else if (ast[0] == "fn") {  // define new function (lambda)
         return Object.assign(function(...a) {
           return EVAL(new_env(env, ast[1], a), ast.at(-1))
