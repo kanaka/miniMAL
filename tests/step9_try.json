@@ -2,6 +2,11 @@
 ["eval", ["read", ["slurp", ["`", "core.json"]]]]
 
 ;;
+;; Retest step2 uncaught undefined symbol with more specific error
+["abc", 1, 2, 3]
+;/.*(abc not found|KeyError.*\'abc\'|no attribute \'abc\').*
+
+;;
 ;; Testing try/catch
 
 ["try", 123, ["catch", "e", 456]]

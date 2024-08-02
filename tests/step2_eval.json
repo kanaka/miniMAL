@@ -19,4 +19,4 @@
 ;;;;=>{"a":15}
 
 ["abc", 1, 2, 3]
-;/.*(abc not found|KeyError.*\'abc\'|no attribute \'abc\').*
+;/.*(abc not found|KeyError.*\'abc\'|no attribute \'abc\'|Uncaught {}).*
