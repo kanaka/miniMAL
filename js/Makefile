@@ -10,6 +10,8 @@ WEB_FILES = web/miniMAL-js1k.js web/miniMAL-min.js web/miniMAL-core.js
 
 all: $(NODE_FILES) $(WEB_FILES)
 
+SHELL := bash
+
 #
 # Uglify
 #
