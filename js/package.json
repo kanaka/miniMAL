@@ -1,6 +1,6 @@
 {
     "name": "minimal-lisp",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "miniMAL: a Clojure-inspired Lisp in < 1024 bytes of JavaScript",
     "keywords": [
         "Clojure",

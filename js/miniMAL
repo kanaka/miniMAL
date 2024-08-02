@@ -12,5 +12,5 @@ Object.assign(m, {
 
 if (process.argv[2]) { return m.load(process.argv[2]) }
 
-console.log("miniMAL 1.2.1")
+console.log("miniMAL 1.2.2")
 require("repl").start({eval: (...a) => console.log(m.rep(a[0])) | a[3]()})

@@ -89,7 +89,7 @@
   (if args
     (EVAL (js/JSON.parse ((@E "slurp") (first args))) E)
     (do
-      (println "miniMAL 1.2.1")
+      (println "miniMAL 1.2.2")
       (.start
         (js/require "repl")
         #js {:eval #(%4 0 (try (EVAL (js/JSON.parse %1) E) (catch :default e (prn e))))

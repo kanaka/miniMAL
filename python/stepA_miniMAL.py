@@ -99,7 +99,7 @@ if __name__ == "__main__":
         EVAL(loads(E.slurp(sys.argv[1])), E)
         sys.exit(0)
 
-    print("miniMAL 1.2.1")
+    print("miniMAL 1.2.2")
     while True:
         try:
             line = input("> ")
