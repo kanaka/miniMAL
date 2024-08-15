@@ -28,7 +28,7 @@ function EVAL(env, ast, f, el) {
             ? Object.keys(ast).reduce(
               (a,k) => (a[k] = EVAL(env, ast[k]), a), {}) // eval object values
             : ast                               // return ast unchanged
-          : ast
+          : ast ?? null
       }
     } else {
       // apply

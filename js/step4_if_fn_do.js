@@ -20,7 +20,7 @@ function EVAL(env, ast, f, el) {
           ? env[ast]                            // lookup symbol
           : (a => {throw ast + " not found"})() // undefined symbol
       } else {
-        return ast
+        return ast ?? null
       }
     } else {
       // apply

@@ -40,7 +40,7 @@ def EVAL(ast, env):
         [EVAL(a, env) for a in ast[1:-1]]
         ast = ast[-1]  # TCO
     elif "if" == ast[0]:
-        ast = ast[2] if EVAL(ast[1], env) else ast[3] # TCO
+        ast = ast[2] if EVAL(ast[1], env) else (*ast[3:4], None)[0] # TCO
     elif "fn" == ast[0]:
         fn = lambda *a: EVAL(ast[2], Env(env, ast[1], [*a]))
         fn.A = [ast[2], env, ast[1]]

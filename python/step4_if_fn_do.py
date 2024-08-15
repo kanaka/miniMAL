@@ -36,7 +36,7 @@ def EVAL(ast, env):
     elif "do" == ast[0]:
         return [EVAL(a, env) for a in ast[1:]][-1]
     elif "if" == ast[0]:
-        return EVAL(ast[2] if EVAL(ast[1], env) else ast[3], env)
+        return EVAL(ast[2] if EVAL(ast[1], env) else (*ast[3:4], None)[0], env)
     elif "fn" == ast[0]:
         return lambda *a: EVAL(ast[2], Env(env, ast[1], a))
     else:
